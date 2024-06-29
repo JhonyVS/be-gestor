@@ -1,15 +1,19 @@
 package com.umss.be_gestor.controller;
 
 import com.umss.be_gestor.model.UsuarioModel;
+import com.umss.be_gestor.ApiResponse;
+import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/usuario")
 public class UsuarioController {
 
     @Autowired
@@ -25,9 +29,14 @@ public class UsuarioController {
         return usuarioService.getUsuarioById(id);
     }
 
-    @PostMapping
-    public UsuarioModel createUsuario(@RequestBody UsuarioModel usuario) {
-        return usuarioService.createUsuario(usuario);
+    @PostMapping("/registrar")
+    public ResponseEntity<ApiResponse<UsuarioModel>> registrarUsuario(@RequestBody UsuarioDTO usuarioDto) {
+        ApiResponse<UsuarioModel> response = usuarioService.crearUsuario(usuarioDto);
+        if (response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @PutMapping("/{id}")

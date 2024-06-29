@@ -6,7 +6,7 @@ public class UsuarioDTO {
 
     private String nombres;
     private String apellidos;
-    private LocalDate fechaNac;
+    private LocalDate nacimiento;
     private String email;
     private String telefono;
     private String username;
@@ -24,11 +24,11 @@ public class UsuarioDTO {
     public void setApellidos(String apellidos) {
         this.apellidos = apellidos;
     }
-    public LocalDate getFechaNac() {
-        return fechaNac;
+    public LocalDate getNacimiento() {
+        return nacimiento;
     }
-    public void setFechaNac(LocalDate fechaNac) {
-        this.fechaNac = fechaNac;
+    public void setNacimiento(LocalDate nacimiento) {
+        this.nacimiento = nacimiento;
     }
     public String getEmail() {
         return email;

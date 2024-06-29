@@ -2,7 +2,7 @@ CREATE TABLE usuario (
     id SERIAL PRIMARY KEY,
     nombres VARCHAR(50) NOT NULL,
     apellidos VARCHAR(50) NOT NULL,
-    fecha_nac DATE,
+    nacimiento DATE,
     email VARCHAR(85) NOT NULL UNIQUE,
     telefono VARCHAR(25),
     username VARCHAR(30) NOT NULL UNIQUE,

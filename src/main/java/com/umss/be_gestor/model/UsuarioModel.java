@@ -20,8 +20,8 @@ public class UsuarioModel {
     @Column(name = "apellidos", nullable = false, length = 50)
     private String apellidos;
 
-    @Column(name = "fecha_nac")
-    private LocalDate fechaNac;
+    @Column(name = "nacimiento")
+    private LocalDate nacimiento;
 
     @Column(name = "email", nullable = false, unique = true, length = 85)
     private String email;
@@ -47,6 +47,11 @@ public class UsuarioModel {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    public UsuarioModel() {
+        //this.createdAt = LocalDateTime.now(); // Asignación del tiempo actual
+        this.activado=true;
+    }
+
     public Long getId() {
         return id;
     }
@@ -71,12 +76,12 @@ public class UsuarioModel {
         this.apellidos = apellidos;
     }
 
-    public LocalDate getFechaNac() {
-        return fechaNac;
+    public LocalDate getNacimiento() {
+        return nacimiento;
     }
 
-    public void setFechaNac(LocalDate fechaNac) {
-        this.fechaNac = fechaNac;
+    public void setNacimiento(LocalDate nacimiento) {
+        this.nacimiento = nacimiento;
     }
 
     public String getEmail() {
