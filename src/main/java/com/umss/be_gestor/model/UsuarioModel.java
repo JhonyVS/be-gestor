@@ -1,6 +1,8 @@
 package com.umss.be_gestor.model;
 
 import javax.persistence.*;
+
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -36,7 +38,7 @@ public class UsuarioModel {
     private String password;
 
     @Column(name = "activado", nullable = false)
-    private boolean activado;
+    private Boolean activado;
 
     @Column(name = "motivo_suspension", length = 150)
     private String motivoSuspension;
@@ -116,11 +118,11 @@ public class UsuarioModel {
         this.password = password;
     }
 
-    public boolean isActivado() {
+    public Boolean isActivado() {
         return activado;
     }
 
-    public void setActivado(boolean activado) {
+    public void setActivado(Boolean activado) {
         this.activado = activado;
     }
 
@@ -148,7 +150,6 @@ public class UsuarioModel {
         this.updatedAt = updatedAt;
     }
 
-    // getters and setters
-    // You can generate these methods using IDE or lombok library
+
     
 }
