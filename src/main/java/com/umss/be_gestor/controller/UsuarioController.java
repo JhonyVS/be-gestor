@@ -1,9 +1,9 @@
 package com.umss.be_gestor.controller;
 
-import com.umss.be_gestor.ApiResponse;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.model.UsuarioModel;
 import com.umss.be_gestor.service.UsuarioService;
+import com.umss.be_gestor.util.ApiResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class UsuarioController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/find/{id}")
     public ResponseEntity<ApiResponse<UsuarioDTO>> getUsuarioById(@PathVariable Long id) {
         ApiResponse<UsuarioDTO> response = usuarioService.getUsuarioById(id);
         if (response.isSuccess()) {

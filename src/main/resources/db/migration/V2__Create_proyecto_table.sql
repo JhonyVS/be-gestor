@@ -7,6 +7,6 @@ CREATE TABLE proyecto (
     id_project_manager INT,
     activado BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_project_manager) REFERENCES usuario(id)
 );

@@ -1,4 +1,4 @@
-package com.umss.be_gestor;
+package com.umss.be_gestor.util;
 
 public class ApiResponse<T> {
     private boolean success;

@@ -8,7 +8,7 @@ CREATE TABLE tarea (
     id_usuario_asignado INT,
     activado BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    update_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_historia) REFERENCES historia(id),
     FOREIGN KEY (id_tarjeta) REFERENCES tarjeta(id),
     FOREIGN KEY (id_usuario_asignado) REFERENCES usuario(id)

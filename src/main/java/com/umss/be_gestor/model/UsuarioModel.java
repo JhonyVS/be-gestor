@@ -38,20 +38,19 @@ public class UsuarioModel {
     private String password;
 
     @Column(name = "activado", nullable = false)
-    private Boolean activado;
+    private Boolean activado = true;
 
     @Column(name = "motivo_suspension", length = 150)
     private String motivoSuspension;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     public UsuarioModel() {
-        //this.createdAt = LocalDateTime.now(); // Asignación del tiempo actual
-        this.activado=true;
+        //this.activado = true;
     }
 
     public Long getId() {

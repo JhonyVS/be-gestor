@@ -2,9 +2,10 @@ package com.umss.be_gestor.service;
 
 
 import com.umss.be_gestor.model.UsuarioModel;
-import com.umss.be_gestor.ApiResponse;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.util.ApiResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,11 @@ public class UsuarioService {
             .map(this::convertToDto)
             .collect(Collectors.toList());
         return new ApiResponse<>(true, "Lista de usuarios obtenida correctamente", usuariosDTO);
+    }
+
+    public UsuarioModel findUsuarioModelById(Long id) {
+        Optional<UsuarioModel> usuarioModel = usuarioRepository.findById(id);
+        return usuarioModel.orElse(null);
     }
 
     public ApiResponse<UsuarioDTO> getUsuarioById(Long id) {

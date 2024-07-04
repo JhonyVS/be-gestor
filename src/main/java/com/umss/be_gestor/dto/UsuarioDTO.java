@@ -15,10 +15,11 @@ public class UsuarioDTO implements Serializable {
     private String telefono;
     private String username;
     private String password;
-    private Boolean activado;
+    private Boolean activado = true;
     private String motivoSuspension;
 
     public UsuarioDTO() {
+        
     }
     
     public String getNombres() {
