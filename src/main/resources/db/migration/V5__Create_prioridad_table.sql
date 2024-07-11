@@ -1,5 +1,5 @@
 CREATE TABLE prioridad (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     titulo VARCHAR(50) NOT NULL,
     activado BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

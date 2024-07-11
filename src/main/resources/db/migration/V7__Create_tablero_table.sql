@@ -1,6 +1,6 @@
 CREATE TABLE tablero (
-    id SERIAL PRIMARY KEY,
-    id_proyecto INT NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_proyecto UUID NOT NULL,
     titulo VARCHAR(100) NOT NULL,
     descripcion TEXT,
     activado BOOLEAN NOT NULL DEFAULT TRUE,

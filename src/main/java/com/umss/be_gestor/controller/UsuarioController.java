@@ -1,80 +1,50 @@
 package com.umss.be_gestor.controller;
-
-import com.umss.be_gestor.dto.UsuarioDTO;
-import com.umss.be_gestor.model.UsuarioModel;
-import com.umss.be_gestor.service.UsuarioService;
-import com.umss.be_gestor.util.ApiResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.umss.be_gestor.dto.UsuarioDTO;
+import com.umss.be_gestor.exception.NotFoundException;
+import com.umss.be_gestor.model.Usuario;
+import com.umss.be_gestor.service.UsuarioService;
+
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/usuario")
+@RequestMapping("/usuario")
 public class UsuarioController {
-
-
 
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping("/full")
-	public ResponseEntity<ApiResponse<List<UsuarioModel>>> getAllUsers(){
-		ApiResponse<List<UsuarioModel>> usuarios = usuarioService.getAllUsers();
-		return ResponseEntity.status(HttpStatus.OK).body(usuarios);
-	}
-
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse<List<UsuarioDTO>>> getAllUsuarios() {
-        ApiResponse<List<UsuarioDTO>> response = usuarioService.getAllUsuarios();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
+        return ResponseEntity.ok(usuarioService.getAllUsuarios());
+    }
+    @GetMapping("/full")
+    public ResponseEntity<List<Usuario>> getFullUsuarios() {
+        return ResponseEntity.ok(usuarioService.getFullUsuarios());
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> getUsuarioById(@PathVariable Long id) {
-        ApiResponse<UsuarioDTO> response = usuarioService.getUsuarioById(id);
-        if (response.isSuccess()) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(404).body(response);
-        }
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable UUID id) throws NotFoundException {
+        return ResponseEntity.ok(usuarioService.getUsuarioById(id));
     }
 
-    @PostMapping("/registrar")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> registrarUsuario(@RequestBody UsuarioDTO usuarioDto) {
-        ApiResponse<UsuarioDTO> response = usuarioService.crearUsuario(usuarioDto);
-        if (response.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    @PostMapping("/create")
+    public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+        return ResponseEntity.status(201).body(usuarioService.createUsuario(usuarioDTO));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> updateUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDto) {
-        ApiResponse<UsuarioDTO> response = usuarioService.updateUsuario(id, usuarioDto);
-        if (response.isSuccess()) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-    }
-
-    @PutMapping("/desactivar/{id}")
-    public ResponseEntity<ApiResponse<UsuarioDTO>> desactivarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDto) {
-        ApiResponse<UsuarioDTO> response = usuarioService.desactivarUsuario(id, usuarioDto);
-        if (response.isSuccess()) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable UUID id, @RequestBody UsuarioDTO usuarioDTO) throws NotFoundException {
+        return ResponseEntity.ok(usuarioService.updateUsuario(id, usuarioDTO));
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteUsuario(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUsuario(@PathVariable UUID id) throws NotFoundException {
         usuarioService.deleteUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }

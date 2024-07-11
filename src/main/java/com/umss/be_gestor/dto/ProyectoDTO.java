@@ -1,58 +1,71 @@
 package com.umss.be_gestor.dto;
-
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.UUID;
 
 public class ProyectoDTO {
 
-    private Long id;
+    private UUID id;
     private String nombre;
     private String descripcion;
-    private Date fecha_inicio;
-    private Date fecha_final;
-    private Long idProjectManager;
-    private Boolean activado = true;
-    public Long getId() {
+    private LocalDate fechaInicio;
+    private LocalDate fechaFinal;
+    private UUID projectManagerId;
+    private Boolean activado;
+
+    // Getters y setters
+    public UUID getId() {
         return id;
     }
-    public void setId(Long id) {
+
+    public void setId(UUID id) {
         this.id = id;
     }
+
     public String getNombre() {
         return nombre;
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
     public String getDescripcion() {
         return descripcion;
     }
+
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    public Date getFecha_inicio() {
-        return fecha_inicio;
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
     }
-    public void setFecha_inicio(Date fecha_inicio) {
-        this.fecha_inicio = fecha_inicio;
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
     }
-    public Date getFecha_final() {
-        return fecha_final;
+
+    public LocalDate getFechaFinal() {
+        return fechaFinal;
     }
-    public void setFecha_final(Date fecha_final) {
-        this.fecha_final = fecha_final;
+
+    public void setFechaFinal(LocalDate fechaFinal) {
+        this.fechaFinal = fechaFinal;
     }
-    public Long getIdProjectManager() {
-        return idProjectManager;
+
+    public UUID getProjectManagerId() {
+        return projectManagerId;
     }
-    public void setIdProjectManager(Long idProjectManager) {
-        this.idProjectManager = idProjectManager;
+
+    public void setProjectManagerId(UUID projectManagerId) {
+        this.projectManagerId = projectManagerId;
     }
+
     public Boolean getActivado() {
         return activado;
     }
+
     public void setActivado(Boolean activado) {
         this.activado = activado;
     }
-
-    // Getters and setters
 }

@@ -1,20 +1,17 @@
 package com.umss.be_gestor.model;
-
 import javax.persistence.*;
-
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-
+import java.util.UUID;
 
 @Entity
 @Table(name = "usuario")
-public class UsuarioModel {
+public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
     @Column(name = "nombres", nullable = false, length = 50)
     private String nombres;
@@ -38,26 +35,23 @@ public class UsuarioModel {
     private String password;
 
     @Column(name = "activado", nullable = false)
-    private Boolean activado = true;
+    private Boolean activado;
 
     @Column(name = "motivo_suspension", length = 150)
     private String motivoSuspension;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
 
-    public UsuarioModel() {
-        //this.activado = true;
-    }
-
-    public Long getId() {
+    // Getters y setters
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -148,7 +142,4 @@ public class UsuarioModel {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-
-    
 }

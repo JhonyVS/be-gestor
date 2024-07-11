@@ -1,132 +1,125 @@
 package com.umss.be_gestor.service;
-
-import com.umss.be_gestor.dto.ProyectoDTO;
-import com.umss.be_gestor.model.ProyectoModel;
-import com.umss.be_gestor.model.UsuarioModel;
-import com.umss.be_gestor.repository.ProyectoRepository;
-import com.umss.be_gestor.util.ApiResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.umss.be_gestor.dto.ProyectoDTO;
+import com.umss.be_gestor.exception.NotFoundException;
+import com.umss.be_gestor.model.Proyecto;
+import com.umss.be_gestor.model.Usuario;
+import com.umss.be_gestor.repository.ProyectoRepository;
+import com.umss.be_gestor.repository.UsuarioRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class ProyectoService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProyectoService.class);
-
     @Autowired
     private ProyectoRepository proyectoRepository;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioRepository usuarioRepository;
 
-    public ApiResponse<List<ProyectoModel>> getAllProyectos() {
-        List<ProyectoModel> proyectos = proyectoRepository.findAll();
-        return new ApiResponse<>(true, "Lista de proyectos obtenida correctamente", proyectos);
-    }
-
-    public ApiResponse<List<ProyectoDTO>> findAll() {
-        List<ProyectoDTO> proyectos = proyectoRepository.findAll().stream()
+    public List<ProyectoDTO> getAllProyectos() {
+        return proyectoRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-        return new ApiResponse<>(true, "Lista de proyectos obtenida correctamente", proyectos);
     }
 
-    public ProyectoModel findProyectoModelById(Long id) {
-        Optional<ProyectoModel> proyectoModel = proyectoRepository.findById(id);
-        return proyectoModel.orElse(null);
+    public List<Proyecto> getFullProyectos() {
+        return proyectoRepository.findAll();
     }
 
-    public ApiResponse<ProyectoDTO> findById(Long id) {
-        Optional<ProyectoModel> proyectoOptional = proyectoRepository.findById(id);
-        if (proyectoOptional.isPresent()) {
-            ProyectoDTO proyectoDTO = convertToDTO(proyectoOptional.get());
-            return new ApiResponse<>(true, "Proyecto encontrado", proyectoDTO);
-        } else {
-            return new ApiResponse<>(false, "Proyecto no encontrado", null);
+    public ProyectoDTO getProyectoById(UUID id) {
+        Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
+        if (proyecto == null) {
+            throw new NotFoundException("Proyecto", id.toString());
         }
+        return convertToDTO(proyecto);
     }
 
-    public ApiResponse<ProyectoDTO> crearProyecto(ProyectoDTO proyectoDto) {
-        ProyectoModel proyectoModel = convertToEntity(proyectoDto);
-    
-        try {
-            proyectoRepository.save(proyectoModel);
-            return new ApiResponse<>(true, "Proyecto registrado correctamente", proyectoDto);
-        } catch (Exception e) {
-            logger.error("Error al guardar proyecto: " + e.getMessage());
-            return new ApiResponse<>(false, "Error al guardar proyecto: " + e.getMessage(), null);
+    public ProyectoDTO createProyecto(ProyectoDTO proyectoDTO) {
+        Proyecto proyecto = convertToEntity(proyectoDTO);
+        proyecto.setCreatedAt(LocalDateTime.now());
+        proyecto.setUpdatedAt(LocalDateTime.now());
+        proyecto.setActivado(true); // Inicializar activado como true
+        proyecto = proyectoRepository.save(proyecto);
+        return convertToDTO(proyecto);
+    }
+
+    public ProyectoDTO updateProyecto(UUID id, ProyectoDTO proyectoDTO) {
+        Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
+        if (proyecto == null) {
+            throw new NotFoundException("Proyecto", id.toString());
         }
-    }
 
-    public ApiResponse<ProyectoDTO> updateProyecto(Long id, ProyectoDTO proyectoDto) {
-        Optional<ProyectoModel> proyectoOptional = proyectoRepository.findById(id);
-
-        if (proyectoOptional.isPresent()) {
-            ProyectoModel proyectoModel = proyectoOptional.get();
-            
-            // Solo actualiza los campos si se proporcionan en el DTO
-            if (proyectoDto.getNombre() != null) {
-                proyectoModel.setNombre(proyectoDto.getNombre());
-            }
-            if (proyectoDto.getDescripcion() != null) {
-                proyectoModel.setDescripcion(proyectoDto.getDescripcion());
-            }
-            if (proyectoDto.getFecha_inicio() != null) {
-                proyectoModel.setFecha_inicio(proyectoDto.getFecha_inicio());
-            }
-            if (proyectoDto.getFecha_final() != null) {
-                proyectoModel.setFecha_final(proyectoDto.getFecha_final());
-            }
-            if (proyectoDto.getIdProjectManager() != null) {
-                proyectoModel.setProjectManager(usuarioService.findUsuarioModelById(proyectoDto.getIdProjectManager()));
-            }
-            
-            proyectoModel.setUpdateAt(LocalDateTime.now());
-
-            ProyectoModel updatedProyecto = proyectoRepository.save(proyectoModel);
-            ProyectoDTO updatedProyectoDTO = convertToDTO(updatedProyecto);
-            return new ApiResponse<>(true, "Proyecto actualizado correctamente", updatedProyectoDTO);
-        } else {
-            return new ApiResponse<>(false, "Proyecto no encontrado", null);
+        // Actualización parcial de los campos
+        if (proyectoDTO.getNombre() != null) {
+            proyecto.setNombre(proyectoDTO.getNombre());
         }
-    }
-
-    public ApiResponse<Void> deleteById(Long id) {
-        if (proyectoRepository.existsById(id)) {
-            proyectoRepository.deleteById(id);
-            return new ApiResponse<>(true, "Proyecto eliminado correctamente", null);
-        } else {
-            return new ApiResponse<>(false, "Proyecto no encontrado", null);
+        if (proyectoDTO.getDescripcion() != null) {
+            proyecto.setDescripcion(proyectoDTO.getDescripcion());
         }
+        if (proyectoDTO.getFechaInicio() != null) {
+            proyecto.setFechaInicio(proyectoDTO.getFechaInicio());
+        }
+        if (proyectoDTO.getFechaFinal() != null) {
+            proyecto.setFechaFinal(proyectoDTO.getFechaFinal());
+        }
+        if (proyectoDTO.getProjectManagerId() != null) {
+            if (proyectoDTO.getProjectManagerId() != null) {
+                Usuario projectManager = usuarioRepository.findById(proyectoDTO.getProjectManagerId()).orElse(null);
+                if (projectManager == null) {
+                    throw new NotFoundException("Usuario", proyectoDTO.getProjectManagerId().toString());
+                }
+                proyecto.setProjectManager(projectManager);
+            }
+        }
+        if (proyectoDTO.getActivado() != null) {
+            proyecto.setActivado(proyectoDTO.getActivado());
+        }
+
+        proyecto.setUpdatedAt(LocalDateTime.now());
+        proyecto = proyectoRepository.save(proyecto);
+        return convertToDTO(proyecto);
     }
 
-    private ProyectoDTO convertToDTO(ProyectoModel proyectoModel) {
+    public void deleteProyecto(UUID id) {
+        Proyecto proyecto = proyectoRepository.findById(id).orElse(null);
+        if (proyecto == null) {
+            throw new NotFoundException("Proyecto", id.toString());
+        }
+        proyectoRepository.delete(proyecto);
+    }
+
+    private ProyectoDTO convertToDTO(Proyecto proyecto) {
         ProyectoDTO proyectoDTO = new ProyectoDTO();
-        proyectoDTO.setId(proyectoModel.getId());
-        proyectoDTO.setNombre(proyectoModel.getNombre());
-        proyectoDTO.setDescripcion(proyectoModel.getDescripcion());
-        proyectoDTO.setFecha_inicio(proyectoModel.getFecha_inicio());
-        proyectoDTO.setFecha_final(proyectoModel.getFecha_final());
-        proyectoDTO.setIdProjectManager(proyectoModel.getProjectManager().getId());
+        proyectoDTO.setId(proyecto.getId());
+        proyectoDTO.setNombre(proyecto.getNombre());
+        proyectoDTO.setDescripcion(proyecto.getDescripcion());
+        proyectoDTO.setFechaInicio(proyecto.getFechaInicio());
+        proyectoDTO.setFechaFinal(proyecto.getFechaFinal());
+        proyectoDTO.setProjectManagerId(proyecto.getProjectManager().getId());
+        proyectoDTO.setActivado(proyecto.getActivado());
         return proyectoDTO;
     }
 
-    private ProyectoModel convertToEntity(ProyectoDTO proyectoDTO) {
-        ProyectoModel proyectoModel = new ProyectoModel();
-        proyectoModel.setId(proyectoDTO.getId());
-        proyectoModel.setNombre(proyectoDTO.getNombre());
-        proyectoModel.setDescripcion(proyectoDTO.getDescripcion());
-        proyectoModel.setFecha_inicio(proyectoDTO.getFecha_inicio());
-        proyectoModel.setFecha_final(proyectoDTO.getFecha_final());
-        proyectoModel.setProjectManager(usuarioService.findUsuarioModelById(proyectoDTO.getIdProjectManager()));
-        return proyectoModel;
+    private Proyecto convertToEntity(ProyectoDTO proyectoDTO) {
+        Proyecto proyecto = new Proyecto();
+        proyecto.setNombre(proyectoDTO.getNombre());
+        proyecto.setDescripcion(proyectoDTO.getDescripcion());
+        proyecto.setFechaInicio(proyectoDTO.getFechaInicio());
+        proyecto.setFechaFinal(proyectoDTO.getFechaFinal());
+        if (proyectoDTO.getProjectManagerId() != null) {
+            Usuario projectManager = usuarioRepository.findById(proyectoDTO.getProjectManagerId()).orElse(null);
+            if (projectManager == null) {
+                throw new NotFoundException("Usuario", proyectoDTO.getProjectManagerId().toString());
+            }
+            proyecto.setProjectManager(projectManager);
+        }
+        proyecto.setActivado(proyectoDTO.getActivado());
+        return proyecto;
     }
 }

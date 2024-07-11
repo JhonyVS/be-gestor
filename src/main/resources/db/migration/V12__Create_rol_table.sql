@@ -1,5 +1,5 @@
 CREATE TABLE rol (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nombre VARCHAR(50) NOT NULL,
     descripcion VARCHAR(200),
     activado BOOLEAN NOT NULL DEFAULT TRUE,

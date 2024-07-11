@@ -1,13 +1,11 @@
 package com.umss.be_gestor.dto;
 
-import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.UUID;
 
-public class UsuarioDTO implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    private long id;
+public class UsuarioDTO {
+    
+    private UUID id;
     private String nombres;
     private String apellidos;
     private LocalDate nacimiento;
@@ -15,21 +13,18 @@ public class UsuarioDTO implements Serializable {
     private String telefono;
     private String username;
     private String password;
-    private Boolean activado = true;
+    private Boolean activado;
     private String motivoSuspension;
-
     public UsuarioDTO() {
-        
     }
-    
-    public String getNombres() {
-        return nombres;
-    }
-    public long getId() {
+    public UUID getId() {
         return id;
     }
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
+    }
+    public String getNombres() {
+        return nombres;
     }
     public void setNombres(String nombres) {
         this.nombres = nombres;
@@ -83,5 +78,5 @@ public class UsuarioDTO implements Serializable {
         this.motivoSuspension = motivoSuspension;
     }
 
+    // Getters y setters
 }
-

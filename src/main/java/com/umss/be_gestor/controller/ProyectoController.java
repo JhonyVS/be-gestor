@@ -1,73 +1,51 @@
 package com.umss.be_gestor.controller;
-
-import com.umss.be_gestor.dto.ProyectoDTO;
-import com.umss.be_gestor.model.ProyectoModel;
-import com.umss.be_gestor.service.ProyectoService;
-import com.umss.be_gestor.util.ApiResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.umss.be_gestor.dto.ProyectoDTO;
+import com.umss.be_gestor.exception.NotFoundException;
+import com.umss.be_gestor.model.Proyecto;
+import com.umss.be_gestor.service.ProyectoService;
+
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/proyecto")
+@RequestMapping("/proyecto")
 public class ProyectoController {
 
     @Autowired
     private ProyectoService proyectoService;
 
-    @GetMapping("/full")
-	public ResponseEntity<ApiResponse<List<ProyectoModel>>> getAllUsers(){
-		ApiResponse<List<ProyectoModel>> proyectos = proyectoService.getAllProyectos();
-		return ResponseEntity.status(HttpStatus.OK).body(proyectos);
-	}
-
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse<List<ProyectoDTO>>> getAllProyectos() {
-        ApiResponse<List<ProyectoDTO>> response = proyectoService.findAll();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<ProyectoDTO>> getAllProyectos() {
+        return ResponseEntity.ok(proyectoService.getAllProyectos());
+    }
+
+    @GetMapping("/full")
+    public ResponseEntity<List<Proyecto>> getFullProyectos() {
+        return ResponseEntity.ok(proyectoService.getFullProyectos());
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<ApiResponse<ProyectoDTO>> getProyectoById(@PathVariable Long id) {
-        ApiResponse<ProyectoDTO> response = proyectoService.findById(id);
-        if (response.isSuccess()) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<ProyectoDTO> getProyectoById(@PathVariable UUID id) throws NotFoundException {
+        return ResponseEntity.ok(proyectoService.getProyectoById(id));
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<ApiResponse<ProyectoDTO>> createProyecto(@RequestBody ProyectoDTO proyectoDTO) {
-        ApiResponse<ProyectoDTO> response = proyectoService.crearProyecto(proyectoDTO);
-        if (response.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+    @PostMapping("/create")
+    public ResponseEntity<ProyectoDTO> createProyecto(@RequestBody ProyectoDTO proyectoDTO) {
+        return ResponseEntity.status(201).body(proyectoService.createProyecto(proyectoDTO));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ApiResponse<ProyectoDTO>> updateProyecto(@PathVariable Long id, @RequestBody ProyectoDTO proyectoDTO) {
-        ApiResponse<ProyectoDTO> response = proyectoService.updateProyecto(id, proyectoDTO);
-        if (response.isSuccess()) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<ProyectoDTO> updateProyecto(@PathVariable UUID id, @RequestBody ProyectoDTO proyectoDTO) throws NotFoundException {
+        return ResponseEntity.ok(proyectoService.updateProyecto(id, proyectoDTO));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteProyecto(@PathVariable Long id) {
-        ApiResponse<Void> response = proyectoService.deleteById(id);
-        if (response.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
+    public ResponseEntity<Void> deleteProyecto(@PathVariable UUID id) throws NotFoundException {
+        proyectoService.deleteProyecto(id);
+        return ResponseEntity.noContent().build();
     }
 }

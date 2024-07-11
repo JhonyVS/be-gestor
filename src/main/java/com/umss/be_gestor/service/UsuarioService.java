@@ -1,174 +1,125 @@
 package com.umss.be_gestor.service;
-
-
-import com.umss.be_gestor.model.UsuarioModel;
-import com.umss.be_gestor.dto.UsuarioDTO;
-import com.umss.be_gestor.repository.UsuarioRepository;
-import com.umss.be_gestor.util.ApiResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.umss.be_gestor.dto.UsuarioDTO;
+import com.umss.be_gestor.exception.NotFoundException;
+import com.umss.be_gestor.model.Usuario;
+import com.umss.be_gestor.repository.UsuarioRepository;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UsuarioService.class);
-
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public ApiResponse<List<UsuarioModel>> getAllUsers() {
-        List<UsuarioModel> usuarios = usuarioRepository.findAll();
-        return new ApiResponse<>(true, "Lista de usuarios obtenida correctamente", usuarios);
+    public List<UsuarioDTO> getAllUsuarios() {
+        return usuarioRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public ApiResponse<List<UsuarioDTO>> getAllUsuarios() {
-        List<UsuarioModel> usuarios = usuarioRepository.findAll();
-        List<UsuarioDTO> usuariosDTO = usuarios.stream()
-            .map(this::convertToDto)
-            .collect(Collectors.toList());
-        return new ApiResponse<>(true, "Lista de usuarios obtenida correctamente", usuariosDTO);
+    public List<Usuario> getFullUsuarios() {
+        return usuarioRepository.findAll();
     }
 
-    public UsuarioModel findUsuarioModelById(Long id) {
-        Optional<UsuarioModel> usuarioModel = usuarioRepository.findById(id);
-        return usuarioModel.orElse(null);
-    }
-
-    public ApiResponse<UsuarioDTO> getUsuarioById(Long id) {
-        Optional<UsuarioModel> usuarioOptional = usuarioRepository.findById(id);
-        if (usuarioOptional.isPresent()) {
-            UsuarioDTO usuarioDTO = convertToDto(usuarioOptional.get());
-            return new ApiResponse<>(true, "Usuario encontrado", usuarioDTO);
-        } else {
-            return new ApiResponse<>(false, "Usuario no encontrado", null);
+    public UsuarioDTO getUsuarioById(UUID id) {
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario == null) {
+            throw new NotFoundException("Usuario", id.toString());
         }
+        return convertToDTO(usuario);
     }
 
-    public ApiResponse<UsuarioDTO> crearUsuario(UsuarioDTO usuarioDto) {
-        UsuarioModel usuarioModel = convertToEntity(usuarioDto);
-    
-        try {
-            usuarioRepository.save(usuarioModel);
-            return new ApiResponse<>(true, "Usuario registrado correctamente", usuarioDto);
-        } catch (Exception e) {
-            logger.error("Error al guardar usuario: " + e.getMessage());
-            return new ApiResponse<>(false, "Error al guardar usuario: " + e.getMessage(), null);
+    public UsuarioDTO createUsuario(UsuarioDTO usuarioDTO) {
+        Usuario usuario = convertToEntity(usuarioDTO);
+        // usuario.setId(UUID.randomUUID()); No es necesario ya que está por defecto en postgres como gen_random_uuid(),
+        usuario.setCreatedAt(LocalDateTime.now());
+        usuario.setUpdatedAt(LocalDateTime.now());
+        usuario.setActivado(true); // Inicializar activado como true
+        usuario = usuarioRepository.save(usuario);
+        return convertToDTO(usuario);
+    }
+
+    public UsuarioDTO updateUsuario(UUID id, UsuarioDTO usuarioDTO) {
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario == null) {
+            throw new NotFoundException("Usuario", id.toString());
         }
-    }
 
-    public ApiResponse<UsuarioDTO> updateUsuario(Long id, UsuarioDTO usuarioDto) {
-        Optional<UsuarioModel> usuarioOptional = usuarioRepository.findById(id);
-
-        if (usuarioOptional.isPresent()) {
-            UsuarioModel usuarioModel = usuarioOptional.get();
-            
-            // Solo actualiza los campos si se proporcionan en el DTO
-            if (usuarioDto.getNombres() != null) {
-                usuarioModel.setNombres(usuarioDto.getNombres());
-            }
-            if (usuarioDto.getApellidos() != null) {
-                usuarioModel.setApellidos(usuarioDto.getApellidos());
-            }
-            if (usuarioDto.getNacimiento() != null) {
-                usuarioModel.setNacimiento(usuarioDto.getNacimiento());
-            }
-            if (usuarioDto.getEmail() != null) {
-                usuarioModel.setEmail(usuarioDto.getEmail());
-            }
-            if (usuarioDto.getTelefono() != null) {
-                usuarioModel.setTelefono(usuarioDto.getTelefono());
-            }
-            if (usuarioDto.getUsername() != null) {
-                usuarioModel.setUsername(usuarioDto.getUsername());
-            }
-            if (usuarioDto.getPassword() != null) {
-                usuarioModel.setPassword(usuarioDto.getPassword());
-            }
-            if (usuarioDto.isActivado() != null) {
-                usuarioModel.setActivado(usuarioDto.isActivado());
-            }
-            
-            
-            usuarioModel.setUpdatedAt(LocalDateTime.now());
-
-            UsuarioModel updatedUsuario = usuarioRepository.save(usuarioModel);
-            UsuarioDTO updatedUsuarioDTO = convertToDto(updatedUsuario);
-            return new ApiResponse<>(true, "Usuario actualizado correctamente", updatedUsuarioDTO);
-        } else {
-            return new ApiResponse<>(false, "Usuario no encontrado", null);
+        // Actualización parcial de los campos
+        if (usuarioDTO.getNombres() != null) {
+            usuario.setNombres(usuarioDTO.getNombres());
         }
-    }
-
-    public ApiResponse<UsuarioDTO> desactivarUsuario(Long id, UsuarioDTO usuarioDto) {
-        Optional<UsuarioModel> usuarioOptional = usuarioRepository.findById(id);
-
-        if (usuarioOptional.isPresent()) {
-            UsuarioModel usuarioModel = usuarioOptional.get();
-            
-            // Solo actualiza los campos si se proporcionan en el DTO
-            if (usuarioDto.isActivado() != null) {
-                usuarioModel.setActivado(usuarioDto.isActivado());
-            }
-            if (usuarioDto.getMotivoSuspension() != null) {
-                usuarioModel.setMotivoSuspension(usuarioDto.getMotivoSuspension());
-            }
-            
-            usuarioModel.setUpdatedAt(LocalDateTime.now());
-
-            UsuarioModel updatedUsuario = usuarioRepository.save(usuarioModel);
-            UsuarioDTO updatedUsuarioDTO = convertToDto(updatedUsuario);
-            return new ApiResponse<>(true, "Usuario actualizado correctamente, "+usuarioDto.getMotivoSuspension(), updatedUsuarioDTO);
-        } else {
-            return new ApiResponse<>(false, "Usuario no encontrado", null);
+        if (usuarioDTO.getApellidos() != null) {
+            usuario.setApellidos(usuarioDTO.getApellidos());
         }
+        if (usuarioDTO.getNacimiento() != null) {
+            usuario.setNacimiento(usuarioDTO.getNacimiento());
+        }
+        if (usuarioDTO.getEmail() != null) {
+            usuario.setEmail(usuarioDTO.getEmail());
+        }
+        if (usuarioDTO.getTelefono() != null) {
+            usuario.setTelefono(usuarioDTO.getTelefono());
+        }
+        if (usuarioDTO.getUsername() != null) {
+            usuario.setUsername(usuarioDTO.getUsername());
+        }
+        if (usuarioDTO.getPassword() != null) {
+            usuario.setPassword(usuarioDTO.getPassword());
+        }
+        if (usuarioDTO.isActivado() != null) {
+            usuario.setActivado(usuarioDTO.isActivado());
+        }
+        if (usuarioDTO.getMotivoSuspension() != null) {
+            usuario.setMotivoSuspension(usuarioDTO.getMotivoSuspension());
+        }
+
+        usuario.setUpdatedAt(LocalDateTime.now());
+        usuario = usuarioRepository.save(usuario);
+        return convertToDTO(usuario);
     }
 
-    public void deleteUsuario(Long id) {
-        usuarioRepository.deleteById(id);
+    public void deleteUsuario(UUID id) {
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+        if (usuario == null) {
+            throw new NotFoundException("Usuario", id.toString());
+        }
+        usuarioRepository.delete(usuario);
     }
 
-
-    public UsuarioDTO convertToDto(UsuarioModel usuarioModel) {
+    private UsuarioDTO convertToDTO(Usuario usuario) {
         UsuarioDTO usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setId(usuarioModel.getId());
-        usuarioDTO.setNombres(usuarioModel.getNombres());
-        usuarioDTO.setApellidos(usuarioModel.getApellidos());
-        usuarioDTO.setNacimiento(usuarioModel.getNacimiento());
-        usuarioDTO.setEmail(usuarioModel.getEmail());
-        usuarioDTO.setTelefono(usuarioModel.getTelefono());
-        usuarioDTO.setUsername(usuarioModel.getUsername());
-        usuarioDTO.setPassword(usuarioModel.getPassword());
-        usuarioDTO.setActivado(usuarioModel.isActivado());
-        usuarioDTO.setMotivoSuspension(usuarioModel.getMotivoSuspension());
-        //usuarioDTO.setCreatedAt(usuarioModel.getCreatedAt());
-        //usuarioDTO.setUpdatedAt(usuarioModel.getUpdatedAt());
+        usuarioDTO.setId(usuario.getId());
+        usuarioDTO.setNombres(usuario.getNombres());
+        usuarioDTO.setApellidos(usuario.getApellidos());
+        usuarioDTO.setNacimiento(usuario.getNacimiento());
+        usuarioDTO.setEmail(usuario.getEmail());
+        usuarioDTO.setTelefono(usuario.getTelefono());
+        usuarioDTO.setUsername(usuario.getUsername());
+        usuarioDTO.setPassword(usuario.getPassword());
+        usuarioDTO.setActivado(usuario.isActivado());
+        usuarioDTO.setMotivoSuspension(usuario.getMotivoSuspension());
         return usuarioDTO;
     }
 
-    public UsuarioModel convertToEntity(UsuarioDTO usuarioDTO) {
-        UsuarioModel usuarioModel = new UsuarioModel();
-        usuarioModel.setId(usuarioDTO.getId());
-        usuarioModel.setNombres(usuarioDTO.getNombres());
-        usuarioModel.setApellidos(usuarioDTO.getApellidos());
-        usuarioModel.setNacimiento(usuarioDTO.getNacimiento());
-        usuarioModel.setEmail(usuarioDTO.getEmail());
-        usuarioModel.setTelefono(usuarioDTO.getTelefono());
-        usuarioModel.setUsername(usuarioDTO.getUsername());
-        usuarioModel.setPassword(usuarioDTO.getPassword());;
-        usuarioModel.setActivado(usuarioDTO.isActivado());
-        usuarioModel.setMotivoSuspension(usuarioDTO.getMotivoSuspension());
-        //usuarioModel.setCreatedAt(usuarioDTO.getCreatedAt());
-        //usuarioModel.setUpdatedAt(usuarioDTO.getUpdatedAt());
-        return usuarioModel;
+    private Usuario convertToEntity(UsuarioDTO usuarioDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setNombres(usuarioDTO.getNombres());
+        usuario.setApellidos(usuarioDTO.getApellidos());
+        usuario.setNacimiento(usuarioDTO.getNacimiento());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setTelefono(usuarioDTO.getTelefono());
+        usuario.setUsername(usuarioDTO.getUsername());
+        usuario.setPassword(usuarioDTO.getPassword());
+        usuario.setActivado(usuarioDTO.isActivado());
+        usuario.setMotivoSuspension(usuarioDTO.getMotivoSuspension());
+        return usuario;
     }
-
 }

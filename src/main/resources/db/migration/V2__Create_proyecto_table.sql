@@ -1,10 +1,10 @@
 CREATE TABLE proyecto (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     fecha_inicio DATE,
     fecha_final DATE,
-    id_project_manager INT,
+    id_project_manager UUID,
     activado BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

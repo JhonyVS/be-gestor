@@ -1,6 +1,6 @@
 CREATE TABLE sprint (
-    id SERIAL PRIMARY KEY,
-    id_proyecto INT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_proyecto UUID,
     numero_sprint INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

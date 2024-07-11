@@ -1,7 +1,7 @@
 CREATE TABLE historia (
-    id SERIAL PRIMARY KEY,
-    id_product_backlog INT,
-    id_prioridad INT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_product_backlog UUID,
+    id_prioridad UUID,
     titulo VARCHAR(100) NOT NULL,
     descripcion TEXT,
     estimacion INT,

@@ -11,7 +11,7 @@ import java.util.Date;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.umss.be_gestor.model.UsuarioModel;
+import com.umss.be_gestor.model.Usuario;
 
 
 @Configuration
@@ -23,7 +23,7 @@ public class DatabaseLoader {
             if (repository.count() == 0) {  // Verifica si la tabla está vacía
                 Faker faker = new Faker();
                 for (int i = 0; i < 100; i++) {
-                    UsuarioModel usuario = new UsuarioModel();
+                    Usuario usuario = new Usuario();
                     usuario.setNombres(faker.name().firstName());
                     usuario.setApellidos(faker.name().lastName());
                     Date date = faker.date().birthday();
