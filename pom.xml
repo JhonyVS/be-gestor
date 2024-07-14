@@ -73,6 +73,7 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
+				<version>8.0.5</version> 
                 <configuration>
                     <url>jdbc:postgresql://localhost:5433/be-gestor</url>
                     <user>be-gestor</user>
