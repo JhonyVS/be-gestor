@@ -27,6 +27,9 @@ public class ProductBacklog {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    public ProductBacklog() {
+    }
+
     // Getters y setters
     public UUID getId() {
         return id;

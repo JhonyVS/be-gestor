@@ -28,6 +28,9 @@ public class Equipo {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    public Equipo() {
+    }
+
     // Getters y setters
     public UUID getId() {
         return id;

@@ -27,6 +27,7 @@ public class Prioridad {
     public Prioridad() {
     }
 
+
     // Getters y setters
     public UUID getId() {
         return id;

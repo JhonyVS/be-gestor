@@ -37,6 +37,9 @@ public class Proyecto {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    public Proyecto() {
+    }
+
     // Getters y setters
     public UUID getId() {
         return id;

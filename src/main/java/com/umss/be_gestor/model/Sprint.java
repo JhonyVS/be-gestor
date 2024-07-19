@@ -28,6 +28,9 @@ public class Sprint {
     @Column(name = "activado", nullable = false)
     private Boolean activado;
 
+    public Sprint() {
+    }
+
     // Getters y setters
     public UUID getId() {
         return id;
