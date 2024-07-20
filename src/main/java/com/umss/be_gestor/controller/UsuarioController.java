@@ -1,7 +1,9 @@
 package com.umss.be_gestor.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
@@ -30,6 +32,14 @@ public class UsuarioController {
     @GetMapping("/find/{id}")
     public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable UUID id) throws NotFoundException {
         return ResponseEntity.ok(usuarioService.getUsuarioById(id));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioDTO> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        UsuarioDTO userDTO = usuarioService.getUserDTOByUsername(username);
+        return ResponseEntity.ok(userDTO);
     }
 
     @PostMapping("/create")

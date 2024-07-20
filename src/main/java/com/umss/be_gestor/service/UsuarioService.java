@@ -1,5 +1,7 @@
 package com.umss.be_gestor.service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.umss.be_gestor.dto.UsuarioDTO;
@@ -14,9 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
+    
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<UsuarioDTO> getAllUsuarios() {
         return usuarioRepository.findAll().stream()
@@ -36,9 +42,22 @@ public class UsuarioService {
         return convertToDTO(usuario);
     }
 
+    public UsuarioDTO getUserDTOByUsername(String username) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                                           .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+        return convertToDTO(usuario);
+    }
+
     public UsuarioDTO createUsuario(UsuarioDTO usuarioDTO) {
         Usuario usuario = convertToEntity(usuarioDTO);
         // usuario.setId(UUID.randomUUID()); No es necesario ya que está por defecto en postgres como gen_random_uuid(),
+        usuario.setNombres(usuarioDTO.getNombres());
+        usuario.setApellidos(usuarioDTO.getApellidos());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setUsername(usuarioDTO.getUsername());
+        usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
+        usuario.setTelefono(usuarioDTO.getTelefono());
+        usuario.setNacimiento(usuarioDTO.getNacimiento());
         usuario.setCreatedAt(LocalDateTime.now());
         usuario.setUpdatedAt(LocalDateTime.now());
         usuario.setActivado(true); // Inicializar activado como true
