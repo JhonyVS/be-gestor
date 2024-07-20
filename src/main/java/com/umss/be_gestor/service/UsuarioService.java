@@ -47,6 +47,13 @@ public class UsuarioService {
                                            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
         return convertToDTO(usuario);
     }
+    public boolean isEmailAvailable(String email) {
+        return !usuarioRepository.existsByEmail(email);
+    }
+
+    public boolean isUsernameAvailable(String username) {
+        return !usuarioRepository.existsByUsername(username);
+    }
 
     public UsuarioDTO createUsuario(UsuarioDTO usuarioDTO) {
         Usuario usuario = convertToEntity(usuarioDTO);

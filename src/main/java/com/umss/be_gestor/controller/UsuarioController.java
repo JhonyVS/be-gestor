@@ -10,7 +10,9 @@ import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.service.UsuarioService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -40,6 +42,20 @@ public class UsuarioController {
         String username = authentication.getName();
         UsuarioDTO userDTO = usuarioService.getUserDTOByUsername(username);
         return ResponseEntity.ok(userDTO);
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmailAvailability(@RequestParam String email) {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("emailAvailable", usuarioService.isEmailAvailable(email));
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<Map<String, Boolean>> checkUsernameAvailability(@RequestParam String username) {
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("usernameAvailable", usuarioService.isUsernameAvailable(username));
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/create")
