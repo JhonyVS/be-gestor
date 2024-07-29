@@ -57,7 +57,8 @@ public class UsuarioController {
         response.put("usernameAvailable", usuarioService.isUsernameAvailable(username));
         return ResponseEntity.ok(response);
     }
-
+    
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/create")
     public ResponseEntity<UsuarioDTO> createUsuario(@RequestBody UsuarioDTO usuarioDTO) {
         return ResponseEntity.status(201).body(usuarioService.createUsuario(usuarioDTO));
