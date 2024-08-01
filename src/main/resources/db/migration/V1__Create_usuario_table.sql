@@ -10,7 +10,5 @@ CREATE TABLE usuario (
     activado BOOLEAN NOT NULL DEFAULT TRUE,
     motivo_suspension VARCHAR(150),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    access_token VARCHAR(255), -- Añadir campo para el access token
-    foto VARCHAR(100) DEFAULT '001.png' -- Añadir campo para el nombre del archivo de la foto con valor por defecto
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
