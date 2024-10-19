@@ -10,12 +10,17 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class DatabaseLoader {
+
+        @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Bean
     CommandLineRunner initDatabase(
@@ -49,7 +54,7 @@ public class DatabaseLoader {
                     usuario.setEmail(faker.internet().emailAddress());
                     usuario.setTelefono(faker.phoneNumber().phoneNumber());
                     usuario.setUsername(faker.name().username());
-                    usuario.setPassword("123");
+                    usuario.setPassword(passwordEncoder.encode("123"));
                     usuario.setActivado(true);
                     usuario.setMotivoSuspension(null);
                     usuario.setUpdatedAt(LocalDateTime.now());

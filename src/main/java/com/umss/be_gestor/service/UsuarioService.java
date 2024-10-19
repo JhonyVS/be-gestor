@@ -41,6 +41,13 @@ public class UsuarioService {
         }
         return convertToDTO(usuario);
     }
+    public UsuarioDTO getUsuarioByUsername(String username) {
+        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+        if (usuario == null) {
+            throw new NotFoundException("Usuario", username.toString());
+        }
+        return convertToDTO(usuario);
+    }
 
     public UsuarioDTO getUserDTOByUsername(String username) {
         Usuario usuario = usuarioRepository.findByUsername(username)
@@ -63,6 +70,7 @@ public class UsuarioService {
         usuario.setEmail(usuarioDTO.getEmail());
         usuario.setUsername(usuarioDTO.getUsername());
         usuario.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
+        //usuario.setPassword(usuarioDTO.getPassword());
         usuario.setTelefono(usuarioDTO.getTelefono());
         usuario.setNacimiento(usuarioDTO.getNacimiento());
         usuario.setCreatedAt(LocalDateTime.now());
@@ -147,5 +155,11 @@ public class UsuarioService {
         usuario.setActivado(usuarioDTO.isActivado());
         usuario.setMotivoSuspension(usuarioDTO.getMotivoSuspension());
         return usuario;
+    }
+
+
+    public List<UUID> getProjectUUIDs(UUID userId) {
+        // Lógica para obtener los UUIDs de los proyectos a los que pertenece el usuario
+        return usuarioRepository.findProjectUUIDsByUserId(userId); 
     }
 }

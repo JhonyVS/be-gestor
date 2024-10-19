@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.umss.be_gestor.dto.AuthenticationResponseDTO;
 import com.umss.be_gestor.model.AuthenticationRequest;
-import com.umss.be_gestor.model.AuthenticationResponse;
+import com.umss.be_gestor.dto.UsuarioDTO;
+import com.umss.be_gestor.service.UsuarioService;
 import com.umss.be_gestor.util.JwtUtil;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class AuthController {
@@ -27,6 +32,9 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
@@ -37,10 +45,25 @@ public class AuthController {
             throw new BadCredentialsException("Nombre de usuario o contraseña incorrectos", e);
         }
 
+        // Cargar detalles del usuario
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        // Obtener el usuario desde la base de datos
+        UsuarioDTO usuario = usuarioService.getUsuarioByUsername(authenticationRequest.getUsername()); 
+
+        // Obtener la lista de UUIDs de los proyectos
+        List<UUID> projectUUIDs = usuarioService.getProjectUUIDs(usuario.getId());
+
+        // Crear y devolver el DTO con el JWT, username, nombres, apellidos y proyectos
+        AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(
+                jwt,
+                usuario.getUsername(),
+                usuario.getNombres(),
+                usuario.getApellidos(),
+                projectUUIDs
+        );
+
+        return ResponseEntity.ok(responseDTO);
     }
 }
-
