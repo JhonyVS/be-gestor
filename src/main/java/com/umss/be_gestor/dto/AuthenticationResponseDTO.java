@@ -6,13 +6,22 @@ import java.util.UUID;
 
 public class AuthenticationResponseDTO {
     private String jwt;
+    private UUID id;
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     private String username;
     private String nombres;
     private String apellidos;
     private List<UUID> projectUUIDs;
 
-    public AuthenticationResponseDTO(String jwt, String username, String nombres, String apellidos, List<UUID> projectUUIDs) {
+    public AuthenticationResponseDTO(String jwt, UUID id,String username, String nombres, String apellidos, List<UUID> projectUUIDs) {
         this.jwt = jwt;
+        this.id =id;
         this.username = username;
         this.nombres = nombres;
         this.apellidos = apellidos;

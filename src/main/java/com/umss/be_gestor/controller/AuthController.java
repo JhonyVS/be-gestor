@@ -58,6 +58,7 @@ public class AuthController {
         // Crear y devolver el DTO con el JWT, username, nombres, apellidos y proyectos
         AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(
                 jwt,
+                usuario.getId(),
                 usuario.getUsername(),
                 usuario.getNombres(),
                 usuario.getApellidos(),

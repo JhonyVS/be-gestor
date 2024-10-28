@@ -46,14 +46,15 @@ public class DatabaseLoader {
             if (usuarioRepository.count() == 0) {
                 for (int i = 0; i < 100; i++) {
                     Usuario usuario = new Usuario();
-                    usuario.setNombres(faker.name().firstName());
+                    String username = faker.name().firstName();
+                    usuario.setNombres(username);
                     usuario.setApellidos(faker.name().lastName());
                     Date date = faker.date().birthday();
                     LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     usuario.setNacimiento(localDate);
                     usuario.setEmail(faker.internet().emailAddress());
                     usuario.setTelefono(faker.phoneNumber().phoneNumber());
-                    usuario.setUsername(faker.name().username());
+                    usuario.setUsername(username);
                     usuario.setPassword(passwordEncoder.encode("123"));
                     usuario.setActivado(true);
                     usuario.setMotivoSuspension(null);

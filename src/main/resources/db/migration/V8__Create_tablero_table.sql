@@ -1,7 +1,7 @@
 CREATE TABLE tablero (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    id_proyecto UUID,
-    id_workspace UUID,
+    id_proyecto UUID NULL,
+    id_workspace UUID NULL,
     titulo VARCHAR(100) NOT NULL,
     descripcion TEXT,
     activado BOOLEAN NOT NULL DEFAULT TRUE,
