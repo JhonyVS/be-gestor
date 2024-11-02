@@ -1,11 +1,17 @@
 package com.umss.be_gestor.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tablero")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class Tablero {
 
     @Id
@@ -13,13 +19,35 @@ public class Tablero {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "id_proyecto", nullable = false)
+    @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
+
+    // @ManyToOne
+    // @JoinColumn(name = "id_workspace")
+    // private Workspace workspace;
+
+    @ManyToOne
+    @JoinColumn(name = "id_workspace")
+    // @JsonIgnore
+    private Workspace workspace;
+
+    // Almacena solo el ID del workspace en lugar de la entidad completa
+    // @Column(name = "id_workspace", nullable = false)
+    // private UUID workspaceId;
+
+
+    public Workspace getWorkspace() {
+        return workspace;
+    }
+
+    public void setWorkspace(Workspace workspace) {
+        this.workspace = workspace;
+    }
 
     @Column(name = "titulo", nullable = false, length = 100)
     private String titulo;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
     @Column(name = "activado", nullable = false)
@@ -31,12 +59,14 @@ public class Tablero {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+
+    public Tablero() {
+    }
+
     // Getters y setters
     public UUID getId() {
         return id;
     }
-
-    // No setter para id, para evitar su modificación
 
     public Proyecto getProyecto() {
         return proyecto;
@@ -45,6 +75,7 @@ public class Tablero {
     public void setProyecto(Proyecto proyecto) {
         this.proyecto = proyecto;
     }
+
 
     public String getTitulo() {
         return titulo;
@@ -85,4 +116,9 @@ public class Tablero {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
 }

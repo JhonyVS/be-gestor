@@ -1,5 +1,6 @@
 package com.umss.be_gestor.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TarjetaDTO {
@@ -50,5 +51,6 @@ public class TarjetaDTO {
     public void setActivado(Boolean activado) {
         this.activado = activado;
     }
+
 }
 

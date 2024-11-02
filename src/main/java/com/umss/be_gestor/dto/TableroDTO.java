@@ -6,9 +6,13 @@ public class TableroDTO {
 
     private UUID id;
     private UUID proyectoId;
+    private UUID workspaceId;
     private String titulo;
     private String descripcion;
     private Boolean activado;
+
+    public TableroDTO() {
+    }
 
     // Getters y setters
     public UUID getId() {
@@ -25,6 +29,14 @@ public class TableroDTO {
 
     public void setProyectoId(UUID proyectoId) {
         this.proyectoId = proyectoId;
+    }
+
+    public UUID getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public void setWorkspaceId(UUID workspaceId) {
+        this.workspaceId = workspaceId;
     }
 
     public String getTitulo() {
@@ -50,4 +62,5 @@ public class TableroDTO {
     public void setActivado(Boolean activado) {
         this.activado = activado;
     }
+
 }

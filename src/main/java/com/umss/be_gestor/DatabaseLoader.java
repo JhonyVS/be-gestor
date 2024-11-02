@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -37,21 +40,34 @@ public class DatabaseLoader {
             RolRepository rolRepository,
             MiembroRepository miembroRepository,
             AsignarHistoriaRepository asignarHistoriaRepository,
-            ProductBacklogRepository productBacklogRepository
+            ProductBacklogRepository productBacklogRepository,
+            WorkspaceRepository workspaceRepository
     ) {
         return args -> {
             Faker faker = new Faker();
 
+            Set<String> usernames = new HashSet<>();
+
             // Poblar Usuarios
             if (usuarioRepository.count() == 0) {
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 2; i++) {
                     Usuario usuario = new Usuario();
-                    String username = faker.name().firstName();
+                    String username;
+
+                    // Generar un username único
+                    do {
+                        username = faker.name().firstName();
+                    } while (usernames.contains(username));
+
+                    usernames.add(username);  // Agregar el username al conjunto de únicos
+
                     usuario.setNombres(username);
                     usuario.setApellidos(faker.name().lastName());
+                    
                     Date date = faker.date().birthday();
                     LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     usuario.setNacimiento(localDate);
+                    
                     usuario.setEmail(faker.internet().emailAddress());
                     usuario.setTelefono(faker.phoneNumber().phoneNumber());
                     usuario.setUsername(username);
@@ -60,6 +76,7 @@ public class DatabaseLoader {
                     usuario.setMotivoSuspension(null);
                     usuario.setUpdatedAt(LocalDateTime.now());
                     usuario.setCreatedAt(LocalDateTime.now());
+                    
                     usuarioRepository.save(usuario);
                 }
             }
@@ -67,7 +84,7 @@ public class DatabaseLoader {
             // Poblar Proyectos
             if (proyectoRepository.count() == 0) {
                 List<Usuario> usuarios = usuarioRepository.findAll();
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < 5; i++) {
                     Proyecto proyecto = new Proyecto();
                     proyecto.setNombre(faker.company().name());
                     proyecto.setDescripcion(faker.lorem().sentence());
@@ -84,7 +101,7 @@ public class DatabaseLoader {
             // Poblar ProductBacklogs
             if (productBacklogRepository.count() == 0) {
                 List<Proyecto> proyectos = proyectoRepository.findAll();
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < 2; i++) {
                     ProductBacklog productBacklog = new ProductBacklog();
                     productBacklog.setProyecto(proyectos.get(faker.number().numberBetween(0, proyectos.size())));
                     productBacklog.setActivado(true);
@@ -97,7 +114,7 @@ public class DatabaseLoader {
             // Poblar Equipos
             if (equipoRepository.count() == 0) {
                 List<Proyecto> proyectos = proyectoRepository.findAll();
-                for (int i = 0; i < 20; i++) {
+                for (int i = 0; i < 5; i++) {
                     Equipo equipo = new Equipo();
                     equipo.setNombre(faker.team().name());
                     equipo.setActivado(true);
@@ -124,7 +141,7 @@ public class DatabaseLoader {
             if (historiaRepository.count() == 0) {
                 List<Prioridad> prioridades = prioridadRepository.findAll();
                 List<ProductBacklog> pbl = productBacklogRepository.findAll();
-                for (int i = 0; i < 250; i++) {
+                for (int i = 0; i < 5; i++) {
                     Historia historia = new Historia();
                     historia.setTitulo(faker.lorem().sentence());
                     historia.setDescripcion(faker.lorem().paragraph());
@@ -137,25 +154,30 @@ public class DatabaseLoader {
                 }
             }
 
-            // Poblar Tableros
+            // Poblar Tableros de proyectos
             if (tableroRepository.count() == 0) {
                 List<Proyecto> proyectos = proyectoRepository.findAll();
-                for (int i = 0; i < 20; i++) {
-                    Tablero tablero = new Tablero();
-                    tablero.setTitulo(faker.lorem().word());
-                    tablero.setDescripcion(faker.lorem().sentence());
-                    tablero.setProyecto(proyectos.get(faker.number().numberBetween(0, proyectos.size())));
-                    tablero.setActivado(true);
-                    tablero.setUpdatedAt(LocalDateTime.now());
-                    tablero.setCreatedAt(LocalDateTime.now());
-                    tableroRepository.save(tablero);
+                for (Proyecto proyecto: proyectos) {
+                    for (int i = 0; i < 2; i++) {
+                        Tablero tablero = new Tablero();
+                        tablero.setTitulo(faker.lorem().word());
+                        tablero.setDescripcion(faker.lorem().sentence());
+                        tablero.setProyecto(proyecto);
+                        tablero.setWorkspace(null);
+                        tablero.setActivado(true);
+                        tablero.setUpdatedAt(LocalDateTime.now());
+                        tablero.setCreatedAt(LocalDateTime.now());
+                        tableroRepository.save(tablero);
+                    }
                 }
             }
 
-            // Poblar Tarjetas
+            
+
+            // Poblar Tarjetas de proyectos de equipos
             if (tarjetaRepository.count() == 0) {
                 List<Tablero> tableros = tableroRepository.findAll();
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 3; i++) {
                     Tarjeta tarjeta = new Tarjeta();
                     tarjeta.setTitulo(faker.lorem().sentence());
                     tarjeta.setDescripcion(faker.lorem().paragraph());
@@ -167,10 +189,10 @@ public class DatabaseLoader {
                 }
             }
 
-            // Poblar Sprints
+            // Poblar Sprints de proyectos de equipos
             if (sprintRepository.count() == 0) {
                 List<Proyecto> proyectos = proyectoRepository.findAll();
-                for (int i = 0; i < 20; i++) {
+                for (int i = 0; i < 3; i++) {
                     Sprint sprint = new Sprint();
                     sprint.setProyecto(proyectos.get(faker.number().numberBetween(0, proyectos.size())));
                     sprint.setNumeroSprint(faker.number().numberBetween(1, 5));
@@ -181,11 +203,11 @@ public class DatabaseLoader {
                 }
             }
 
-            // Poblar Tareas
+            // Poblar Tareas de proyectos de equipos
             if (tareaRepository.count() == 0) {
                 List<Tarjeta> tarjetas = tarjetaRepository.findAll();
                 List<Historia> historias = historiaRepository.findAll();
-                for (int i = 0; i < 200; i++) {
+                for (int i = 0; i < 5; i++) {
                     Tarea tarea = new Tarea();
                     tarea.setTitulo(faker.lorem().sentence());
                     tarea.setDescripcion(faker.lorem().paragraph());
@@ -198,10 +220,76 @@ public class DatabaseLoader {
                 }
             }
 
+
+            // Poblar workspaces
+            if (workspaceRepository.count() == 0) {
+                List<Usuario> usuarios = usuarioRepository.findAll();
+                for (Usuario usuario : usuarios) {
+                    Workspace workspace = new Workspace();
+                    workspace.setProjectManager(usuario);
+                    workspace.setActivado(true);
+                    workspace.setUpdatedAt(LocalDateTime.now());
+                    workspace.setCreatedAt(LocalDateTime.now());
+                    workspaceRepository.save(workspace);
+                }
+            }
+
+            // Poblar Tableros de workspaces
+            //if (tableroRepository.count() == 0) {
+                List<Workspace> workspaces = workspaceRepository.findAll();
+                for (Workspace workspace: workspaces) {
+                    for (int i = 0; i < 2; i++) {
+                        Tablero tablero = new Tablero();
+                        tablero.setTitulo(faker.lorem().word());
+                        tablero.setDescripcion(faker.lorem().sentence());
+                        tablero.setWorkspace(workspace);
+                        tablero.setActivado(true);
+                        tablero.setUpdatedAt(LocalDateTime.now());
+                        tablero.setCreatedAt(LocalDateTime.now());
+                        tableroRepository.save(tablero);
+                    }
+                }
+            //}
+
+            // Poblar Tarjetas de workspaces
+            //if (tarjetaRepository.count() == 0) {
+                List<Tablero> tableros = tableroRepository.findByWorkspaceIdIsNotNull();
+                for (Tablero tablero : tableros) {
+                    for (int i = 0; i < 3; i++) {
+                        Tarjeta tarjeta = new Tarjeta();
+                        tarjeta.setTitulo(faker.lorem().sentence());
+                        tarjeta.setDescripcion(faker.lorem().paragraph());
+                        tarjeta.setTablero(tablero);
+                        tarjeta.setActivado(true);
+                        tarjeta.setCreatedAt(LocalDateTime.now());
+                        tarjeta.setUpdatedAt(LocalDateTime.now());
+                        tarjetaRepository.save(tarjeta);                         
+                    }
+                }
+            //}
+
+            // Poblar Tareas de proyectos de equipos
+            //if (tareaRepository.count() == 0) {
+                // Solo obtener tarjetas que pertenecen a tableros con un workspace asignado
+                List<Tarjeta> tarjetas = tarjetaRepository.findTarjetasWithTableroWorkspace();
+                for (Tarjeta tarjeta : tarjetas) {
+                    for (int i = 0; i < 3; i++) {
+                        Tarea tarea = new Tarea();
+                        tarea.setTitulo(faker.lorem().sentence());
+                        tarea.setDescripcion(faker.lorem().paragraph());
+                        tarea.setTarjeta(tarjeta);
+                        tarea.setActivado(true);
+                        tarea.setCreatedAt(LocalDateTime.now());
+                        tarea.setUpdatedAt(LocalDateTime.now());
+                        tareaRepository.save(tarea);                      
+                    }
+                } 
+            //}
+
             // Poblar SprintBacklogs
             if (sprintBacklogRepository.count() == 0) {
                 List<Sprint> sprints = sprintRepository.findAll();
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < 2; i++) {
                     SprintBacklog sprintBacklog = new SprintBacklog();
                     sprintBacklog.setSprint(sprints.get(faker.number().numberBetween(0, sprints.size())));
                     sprintBacklog.setActivado(true);
@@ -230,7 +318,7 @@ public class DatabaseLoader {
                 List<Usuario> usuarios = usuarioRepository.findAll();
                 List<Equipo> equipos = equipoRepository.findAll();
                 List<Rol> roles = rolRepository.findAll();
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 3; i++) {
                     Miembro miembro = new Miembro();
                     miembro.setUsuario(usuarios.get(faker.number().numberBetween(0, usuarios.size())));
                     miembro.setEquipo(equipos.get(faker.number().numberBetween(0, equipos.size())));
@@ -242,11 +330,11 @@ public class DatabaseLoader {
                 }
             }
 
-            // Poblar AsignarHistorias
+            // // Poblar AsignarHistorias
             if (asignarHistoriaRepository.count() == 0) {
                 List<SprintBacklog> spb = sprintBacklogRepository.findAll();
                 List<Historia> historias = historiaRepository.findAll();
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < 3; i++) {
                     AsignarHistoria asignarHistoria = new AsignarHistoria();
                     asignarHistoria.setSprintBacklog(spb.get(faker.number().numberBetween(0, spb.size())));
                     asignarHistoria.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));

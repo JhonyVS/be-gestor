@@ -31,6 +31,12 @@ public class Tarjeta {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    
+
+
+    public Tarjeta() {
+    }
+
     // Getters y setters
     public UUID getId() {
         return id;

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.umss.be_gestor.dto.WorkspaceDTO;
+import com.umss.be_gestor.dto.WorkspaceResponseDTO;
 import com.umss.be_gestor.model.Workspace;
 import com.umss.be_gestor.service.WorkspaceService;
 
@@ -48,4 +49,11 @@ public class WorkspaceController {
         workspaceService.deleteWorkspace(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-project-manager/{projectManagerId}")
+    public ResponseEntity<Workspace> getWorkspaceDetailsByProjectManagerId(@PathVariable UUID projectManagerId) {
+        Workspace workspace = workspaceService.getWorkspaceWithTableros(projectManagerId);
+        return ResponseEntity.ok(workspace);
+    }
+
 }
