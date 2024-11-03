@@ -3,6 +3,7 @@ package com.umss.be_gestor.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.umss.be_gestor.dto.TableroDTO;
 import com.umss.be_gestor.dto.WorkspaceDTO;
 import com.umss.be_gestor.dto.WorkspaceResponseDTO;
 import com.umss.be_gestor.exception.NotFoundException;
@@ -94,12 +95,38 @@ public class WorkspaceService {
         return workspaceDTO;
     }
 
-    public Workspace getWorkspaceWithTableros(UUID projectManagerId) {
-        return workspaceRepository.findByProjectManager_Id(projectManagerId)
-                .orElseThrow(() -> new NotFoundException("Workspace", projectManagerId.toString()));
+    public WorkspaceResponseDTO getWorkspaceWithTableros(UUID projectManagerId) {
+        Workspace workspace = workspaceRepository.findByProjectManager_Id(projectManagerId)
+                .orElseThrow(() -> new NotFoundException("Workspace no encontrado para el Project Manager con ID: " + projectManagerId, null));
+    
+        // Convertir Workspace a WorkspaceResponseDTO
+        WorkspaceResponseDTO workspaceDTO = new WorkspaceResponseDTO();
+        workspaceDTO.setId(workspace.getId());
+        workspaceDTO.setProjectManagerId(workspace.getProjectManager().getId());
+    
+        // Convertir cada Tablero en TableroDTO y agregarlo a la lista
+        List<TableroDTO> tableroDTOs = workspace.getTableros().stream()
+                .map(DTOConverter::convertToTableroDTO)
+                .collect(Collectors.toList());
+        workspaceDTO.setTableros(tableroDTOs);
+    
+        return workspaceDTO;
+    }
+
+    public WorkspaceResponseDTO getWorkspaceWithTablerosAndTarjetas(UUID projectManagerId) {
+        Workspace workspace = workspaceRepository.findByProjectManager_Id(projectManagerId)
+                .orElseThrow(() -> new NotFoundException("Workspace no encontrado para el Project Manager con ID: " + projectManagerId, null));
+    
+        WorkspaceResponseDTO workspaceResponseDTO = DTOConverter.convertToWorkspaceResponseDTO(workspace);
+    
+        // Convertir los tableros a DTO e incluir sus tarjetas
+        workspaceResponseDTO.setTableros(workspace.getTableros().stream()
+                .map(DTOConverter::convertToTableroDTO)
+                .collect(Collectors.toList()));
+    
+        return workspaceResponseDTO;
     }
     
     
-
     
 }

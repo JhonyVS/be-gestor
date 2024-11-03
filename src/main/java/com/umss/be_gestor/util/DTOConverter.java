@@ -1,5 +1,7 @@
 package com.umss.be_gestor.util;
 
+import java.util.stream.Collectors;
+
 import com.umss.be_gestor.dto.*;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
@@ -22,36 +24,49 @@ public class DTOConverter {
         tableroDTO.setTitulo(tablero.getTitulo());
         tableroDTO.setDescripcion(tablero.getDescripcion());
         tableroDTO.setProyectoId(tablero.getProyecto() != null ? tablero.getProyecto().getId() : null);
-        tableroDTO.setWorkspaceId(tablero.getWorkspace().getId() != null ? tablero.getWorkspace().getId(): null);
+        tableroDTO.setWorkspaceId(tablero.getWorkspace().getId());
         tableroDTO.setActivado(tablero.getActivado());
     
-        
+        // Convertir y asignar la lista de tarjetas
+        if (tablero.getTarjetas() != null) {
+            tableroDTO.setTarjetas(tablero.getTarjetas().stream()
+                    .map(DTOConverter::convertToTarjetaDTO)
+                    .collect(Collectors.toList()));
+        }
+    
         return tableroDTO;
     }
+    
 
     public static TarjetaDTO convertToTarjetaDTO(Tarjeta tarjeta) {
         TarjetaDTO tarjetaDTO = new TarjetaDTO();
         tarjetaDTO.setId(tarjeta.getId());
+        tarjetaDTO.setTableroId(tarjeta.getTablero().getId());
         tarjetaDTO.setTitulo(tarjeta.getTitulo());
         tarjetaDTO.setDescripcion(tarjeta.getDescripcion());
         tarjetaDTO.setActivado(tarjeta.getActivado());
-        
-        
+    
+        // Convertir las tareas asociadas y agregarlas al DTO
+        tarjetaDTO.setTareas(tarjeta.getTareas().stream()
+            .map(DTOConverter::convertToTareaDTO)
+            .collect(Collectors.toList()));
+    
         return tarjetaDTO;
     }
+    
+    
 
     public static TareaDTO convertToTareaDTO(Tarea tarea) {
         TareaDTO tareaDTO = new TareaDTO();
         tareaDTO.setId(tarea.getId());
+        tareaDTO.setTarjetaId(tarea.getTarjeta() != null ? tarea.getTarjeta().getId() : null);
         tareaDTO.setTitulo(tarea.getTitulo());
         tareaDTO.setDescripcion(tarea.getDescripcion());
         tareaDTO.setEstimacion(tarea.getEstimacion());
-        tareaDTO.setHistoriaId(tarea.getHistoria() != null ? tarea.getHistoria().getId() : null);
-        tareaDTO.setTarjetaId(tarea.getTarjeta() != null ? tarea.getTarjeta().getId() : null);
-        tareaDTO.setUsuarioAsignadoId(tarea.getUsuarioAsignado() != null ? tarea.getUsuarioAsignado().getId() : null);
         tareaDTO.setActivado(tarea.getActivado());
         return tareaDTO;
     }
+    
 
 
     // Método para convertir WorkspaceDTO a Workspace (requiere UsuarioRepository)
@@ -66,4 +81,16 @@ public class DTOConverter {
         workspace.setActivado(workspaceDTO.getActivado());
         return workspace;
     }
+
+    public static WorkspaceResponseDTO convertToWorkspaceResponseDTO(Workspace workspace) {
+        WorkspaceResponseDTO workspaceResponseDTO = new WorkspaceResponseDTO();
+        workspaceResponseDTO.setId(workspace.getId());
+        workspaceResponseDTO.setProjectManagerId(workspace.getProjectManager().getId());
+        workspaceResponseDTO.setTableros(workspace.getTableros().stream()
+            .map(DTOConverter::convertToTableroDTO)
+            .collect(Collectors.toList()));
+        return workspaceResponseDTO;
+    }
+
+
 }

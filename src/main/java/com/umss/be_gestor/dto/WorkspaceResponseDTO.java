@@ -6,6 +6,10 @@ import java.util.UUID;
 public class WorkspaceResponseDTO {
     private UUID id;
     private UUID projectManagerId;
+    private List<TableroDTO> tableros;
+
+    public WorkspaceResponseDTO() {
+    }
 
     // Getters y setters
     public UUID getId() {
@@ -24,4 +28,11 @@ public class WorkspaceResponseDTO {
         this.projectManagerId = projectManagerId;
     }
 
+    public List<TableroDTO> getTableros() {
+        return tableros;
+    }
+
+    public void setTableros(List<TableroDTO> tableros) {
+        this.tableros = tableros;
+    }
 }

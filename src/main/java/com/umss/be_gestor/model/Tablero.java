@@ -2,16 +2,14 @@ package com.umss.be_gestor.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tablero")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-
 public class Tablero {
 
     @Id
@@ -22,18 +20,9 @@ public class Tablero {
     @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
 
-    // @ManyToOne
-    // @JoinColumn(name = "id_workspace")
-    // private Workspace workspace;
-
     @ManyToOne
     @JoinColumn(name = "id_workspace")
-    // @JsonIgnore
     private Workspace workspace;
-
-    // Almacena solo el ID del workspace en lugar de la entidad completa
-    // @Column(name = "id_workspace", nullable = false)
-    // private UUID workspaceId;
 
 
     public Workspace getWorkspace() {
@@ -58,6 +47,21 @@ public class Tablero {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+
+    
+    @OneToMany(mappedBy = "tablero", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Tarjeta> tarjetas;
+
+    public List<Tarjeta> getTarjetas() {
+        return tarjetas;
+    }
+
+    public void setTarjetas(List<Tarjeta> tarjetas) {
+        this.tarjetas = tarjetas;
+    }
+
+
 
 
     public Tablero() {

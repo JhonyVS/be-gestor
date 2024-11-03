@@ -2,8 +2,6 @@ package com.umss.be_gestor.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "workspace")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Workspace {
 
     @Id
@@ -32,6 +29,23 @@ public class Workspace {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+
+
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Tablero> tableros;
+
+    public List<Tablero> getTableros() {
+        return tableros;
+    }
+
+    public void setTableros(List<Tablero> tableros) {
+        this.tableros = tableros;
+    }
+
+
+
+    public Workspace() {
+    }
 
     // Getters y setters
     public UUID getId() {

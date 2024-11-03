@@ -2,6 +2,7 @@ package com.umss.be_gestor.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -32,6 +33,20 @@ public class Tarjeta {
     private LocalDateTime updatedAt;
 
     
+
+
+    @OneToMany(mappedBy = "tarjeta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Tarea> tareas;
+
+    public List<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<Tarea> tareas) {
+        this.tareas = tareas;
+    }
+
+
 
 
     public Tarjeta() {

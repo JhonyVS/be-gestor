@@ -50,10 +50,18 @@ public class WorkspaceController {
         return ResponseEntity.noContent().build();
     }
 
+    // @GetMapping("/by-project-manager/{projectManagerId}")
+    // public ResponseEntity<Workspace> getWorkspaceDetailsByProjectManagerId(@PathVariable UUID projectManagerId) {
+    //     Workspace workspace = workspaceService.getWorkspaceWithTableros(projectManagerId);
+    //     return ResponseEntity.ok(workspace);
+    // }
+
     @GetMapping("/by-project-manager/{projectManagerId}")
-    public ResponseEntity<Workspace> getWorkspaceDetailsByProjectManagerId(@PathVariable UUID projectManagerId) {
-        Workspace workspace = workspaceService.getWorkspaceWithTableros(projectManagerId);
-        return ResponseEntity.ok(workspace);
+    public ResponseEntity<WorkspaceResponseDTO> getWorkspaceDetailsWithTablerosAndTarjetas(@PathVariable UUID projectManagerId) {
+        WorkspaceResponseDTO workspaceResponseDTO = workspaceService.getWorkspaceWithTablerosAndTarjetas(projectManagerId);
+        return ResponseEntity.ok(workspaceResponseDTO);
     }
+
+
 
 }

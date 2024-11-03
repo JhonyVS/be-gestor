@@ -9,7 +9,11 @@ import java.util.Optional;
 
 public interface WorkspaceRepository extends JpaRepository<Workspace, UUID> {
 
-    @EntityGraph(attributePaths = {"tableros", "tableros.tarjetas"})
+    // @EntityGraph(attributePaths = {"tableros", "tableros.tarjetas"})
+    // Optional<Workspace> findByProjectManager_Id(UUID projectManagerId);
+
+
+    @EntityGraph(attributePaths = {"tableros"})
     Optional<Workspace> findByProjectManager_Id(UUID projectManagerId);
 
 }

@@ -1,5 +1,6 @@
 package com.umss.be_gestor.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TableroDTO {
@@ -10,9 +11,7 @@ public class TableroDTO {
     private String titulo;
     private String descripcion;
     private Boolean activado;
-
-    public TableroDTO() {
-    }
+    private List<TarjetaDTO> tarjetas; // Agregar la lista de tarjetas
 
     // Getters y setters
     public UUID getId() {
@@ -63,4 +62,11 @@ public class TableroDTO {
         this.activado = activado;
     }
 
+    public List<TarjetaDTO> getTarjetas() {
+        return tarjetas;
+    }
+
+    public void setTarjetas(List<TarjetaDTO> tarjetas) {
+        this.tarjetas = tarjetas;
+    }
 }

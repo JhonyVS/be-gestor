@@ -34,12 +34,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                .authorizeRequests(requests -> requests
-                        .antMatchers("/login", "/usuario/full", "/usuario/create",
-                                                "/usuario/check-username","/usuario/check-email").permitAll()
-                        .antMatchers("/usuario/me").authenticated()
-                        .anyRequest().authenticated())
-                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            .cors().and() // Habilita CORS
+            .authorizeRequests(requests -> requests
+                .antMatchers("/login", "/usuario/full", "/usuario/create",
+                            "/usuario/check-username", "/usuario/check-email").permitAll()
+                .antMatchers("/usuario/me").authenticated()
+                .anyRequest().authenticated())
+            .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

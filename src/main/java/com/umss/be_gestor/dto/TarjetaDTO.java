@@ -10,6 +10,15 @@ public class TarjetaDTO {
     private String titulo;
     private String descripcion;
     private Boolean activado;
+    private List<TareaDTO> tareas; // Agregar lista de tareas
+
+    public List<TareaDTO> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<TareaDTO> tareas) {
+        this.tareas = tareas;
+    }
 
     // Getters y setters
     public UUID getId() {
