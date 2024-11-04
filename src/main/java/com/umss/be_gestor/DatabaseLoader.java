@@ -25,6 +25,39 @@ public class DatabaseLoader {
         @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Vector de tareas
+    private String[] tareasArray= {
+        "Definir requisitos",
+        "Crear mockups",
+        "Desarrollar backend",
+        "Desarrollar frontend",
+        "Realizar pruebas unitarias",
+        "Integrar frontend y backend",
+        "Implementar autenticación",
+        "Configurar base de datos",
+        "Escribir documentación técnica",
+        "Optimizar el código",
+        "Configurar CI/CD",
+        "Desplegar en ambiente de pruebas",
+        "Revisar feedback de QA",
+        "Corregir errores",
+        "Desplegar en producción",
+        "Capacitar al usuario final",
+        "Monitorear rendimiento",
+        "Gestionar incidencias",
+        "Actualizar documentación",
+        "Preparar informe final"
+    };
+
+    // Vector de nombres de tableros
+    private String[] tablerosArray = {
+        "ToDo",
+        "Working",
+        "Review",
+        "Done",
+        "Backlog"
+    };
+
     @Bean
     CommandLineRunner initDatabase(
             UsuarioRepository usuarioRepository,
@@ -179,7 +212,7 @@ public class DatabaseLoader {
                 List<Tablero> tableros = tableroRepository.findAll();
                 for (int i = 0; i < 3; i++) {
                     Tarjeta tarjeta = new Tarjeta();
-                    tarjeta.setTitulo(faker.lorem().sentence());
+                    tarjeta.setTitulo(tablerosArray[i]);
                     tarjeta.setDescripcion(faker.lorem().paragraph());
                     tarjeta.setTablero(tableros.get(faker.number().numberBetween(0, tableros.size())));
                     tarjeta.setActivado(true);
@@ -209,7 +242,7 @@ public class DatabaseLoader {
                 List<Historia> historias = historiaRepository.findAll();
                 for (int i = 0; i < 5; i++) {
                     Tarea tarea = new Tarea();
-                    tarea.setTitulo(faker.lorem().sentence());
+                    tarea.setTitulo(tareasArray[faker.number().numberBetween(0,tareasArray.length)]);
                     tarea.setDescripcion(faker.lorem().paragraph());
                     tarea.setTarjeta(tarjetas.get(faker.number().numberBetween(0, tarjetas.size())));
                     tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
@@ -232,7 +265,7 @@ public class DatabaseLoader {
                     workspace.setCreatedAt(LocalDateTime.now());
                     workspaceRepository.save(workspace);
                 }
-            }
+            
 
             // Poblar Tableros de workspaces
             //if (tableroRepository.count() == 0) {
@@ -257,7 +290,7 @@ public class DatabaseLoader {
                 for (Tablero tablero : tableros) {
                     for (int i = 0; i < 3; i++) {
                         Tarjeta tarjeta = new Tarjeta();
-                        tarjeta.setTitulo(faker.lorem().sentence());
+                        tarjeta.setTitulo(tablerosArray[i]);
                         tarjeta.setDescripcion(faker.lorem().paragraph());
                         tarjeta.setTablero(tablero);
                         tarjeta.setActivado(true);
@@ -275,7 +308,7 @@ public class DatabaseLoader {
                 for (Tarjeta tarjeta : tarjetas) {
                     for (int i = 0; i < 3; i++) {
                         Tarea tarea = new Tarea();
-                        tarea.setTitulo(faker.lorem().sentence());
+                        tarea.setTitulo(tareasArray[faker.number().numberBetween(0,tareasArray.length)]);
                         tarea.setDescripcion(faker.lorem().paragraph());
                         tarea.setTarjeta(tarjeta);
                         tarea.setActivado(true);
@@ -285,6 +318,7 @@ public class DatabaseLoader {
                     }
                 } 
             //}
+            }
 
             // Poblar SprintBacklogs
             if (sprintBacklogRepository.count() == 0) {
