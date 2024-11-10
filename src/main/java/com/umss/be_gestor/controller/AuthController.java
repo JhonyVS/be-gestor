@@ -17,8 +17,6 @@ import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.service.UsuarioService;
 import com.umss.be_gestor.util.JwtUtil;
 
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 public class AuthController {
@@ -53,7 +51,7 @@ public class AuthController {
         UsuarioDTO usuario = usuarioService.getUsuarioByUsername(authenticationRequest.getUsername()); 
 
         // Obtener la lista de UUIDs de los proyectos
-        List<UUID> projectUUIDs = usuarioService.getProjectUUIDs(usuario.getId());
+        //List<UUID> projectUUIDs = usuarioService.getProjectUUIDs(usuario.getId());
 
         // Crear y devolver el DTO con el JWT, username, nombres, apellidos y proyectos
         AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(
@@ -61,8 +59,8 @@ public class AuthController {
                 usuario.getId(),
                 usuario.getUsername(),
                 usuario.getNombres(),
-                usuario.getApellidos(),
-                projectUUIDs
+                usuario.getApellidos()
+                //projectUUIDs
         );
 
         return ResponseEntity.ok(responseDTO);

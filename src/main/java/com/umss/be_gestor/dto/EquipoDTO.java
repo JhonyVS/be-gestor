@@ -1,5 +1,6 @@
 package com.umss.be_gestor.dto;
 
+import java.util.List;
 import java.util.UUID;
 
 public class EquipoDTO {
@@ -8,6 +9,16 @@ public class EquipoDTO {
     private String nombre;
     private UUID proyectoId;
     private Boolean activado;
+
+    private List<UsuarioDTO> integrantes;
+
+    public List<UsuarioDTO> getIntegrantes() {
+        return integrantes;
+    }
+
+    public void setIntegrantes(List<UsuarioDTO> integrantes) {
+        this.integrantes = integrantes;
+    }
 
     // Getters y setters
     public UUID getId() {

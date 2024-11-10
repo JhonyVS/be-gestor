@@ -2,11 +2,14 @@ package com.umss.be_gestor.util;
 
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import com.umss.be_gestor.dto.*;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
 import com.umss.be_gestor.repository.UsuarioRepository;
 
+@Component
 public class DTOConverter {
 
      // Método para convertir Workspace a WorkspaceDTO
@@ -91,6 +94,63 @@ public class DTOConverter {
             .collect(Collectors.toList()));
         return workspaceResponseDTO;
     }
+
+    public static ProyectoDTO convertToDTO(Proyecto proyecto) {
+        ProyectoDTO dto = new ProyectoDTO();
+        dto.setId(proyecto.getId());
+        dto.setNombre(proyecto.getNombre());
+        dto.setDescripcion(proyecto.getDescripcion());
+        dto.setFechaInicio(proyecto.getFechaInicio());
+        dto.setFechaFinal(proyecto.getFechaFinal());
+        dto.setProjectManagerId(proyecto.getProjectManager().getId());
+        dto.setActivado(proyecto.getActivado());
+        return dto;
+    }
+
+    public static EquipoDTO convertToEquipoDTO(Equipo equipo) {
+        EquipoDTO equipoDTO = new EquipoDTO();
+        equipoDTO.setId(equipo.getId());
+        equipoDTO.setNombre(equipo.getNombre());
+        equipoDTO.setProyectoId(equipo.getProyecto().getId());
+        equipoDTO.setActivado(equipo.getActivado());
+    
+        System.out.println("Integrantes del equipo " + equipo.getNombre() + ": " + equipo.getIntegrantes());
+    
+        equipoDTO.setIntegrantes(
+            equipo.getIntegrantes().stream()
+                .map(DTOConverter::convertToUsuarioDTO)
+                .collect(Collectors.toList())
+        );
+        return equipoDTO;
+    }
+    
+    
+    public static UsuarioDTO convertToUsuarioDTO(Usuario usuario) {
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setId(usuario.getId());
+        usuarioDTO.setNombres(usuario.getNombres());
+        usuarioDTO.setApellidos(usuario.getApellidos());
+        usuarioDTO.setEmail(usuario.getEmail());
+        usuarioDTO.setTelefono(usuario.getTelefono());
+        return usuarioDTO;
+    }
+
+    public static ProyectoDTO convertToProyectoDTO(Proyecto proyecto) {
+        ProyectoDTO dto = new ProyectoDTO();
+        dto.setId(proyecto.getId());
+        dto.setNombre(proyecto.getNombre());
+        dto.setDescripcion(proyecto.getDescripcion());
+        dto.setFechaInicio(proyecto.getFechaInicio());
+        dto.setFechaFinal(proyecto.getFechaFinal());
+        dto.setProjectManagerId(proyecto.getProjectManager().getId());
+        dto.setActivado(proyecto.getActivado());
+        return dto;
+    }
+
+    
+
+    
+    
 
 
 }

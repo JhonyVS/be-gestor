@@ -2,6 +2,7 @@ package com.umss.be_gestor.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,6 +19,22 @@ public class Equipo {
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
+
+    @ManyToMany
+    @JoinTable(
+        name = "equipo_usuario",
+        joinColumns = @JoinColumn(name = "equipo_id"),
+        inverseJoinColumns = @JoinColumn(name = "usuario_id")
+    )
+    private List<Usuario> integrantes;
+
+    public List<Usuario> getIntegrantes() {
+        return integrantes;
+    }
+
+    public void setIntegrantes(List<Usuario> integrantes) {
+        this.integrantes = integrantes;
+    }
 
     @Column(name = "activado", nullable = false)
     private Boolean activado;

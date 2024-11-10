@@ -1,5 +1,6 @@
 package com.umss.be_gestor.dto;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public class ProyectoDTO {
@@ -11,6 +12,18 @@ public class ProyectoDTO {
     private LocalDate fechaFinal;
     private UUID projectManagerId;
     private Boolean activado;
+    private List<EquipoDTO> equipos; // Agrega esta lista
+
+    public List<EquipoDTO> getEquipos() {
+        return equipos;
+    }
+
+    public void setEquipos(List<EquipoDTO> equipos) {
+        this.equipos = equipos;
+    }
+
+    public ProyectoDTO() {
+    }
 
     // Getters y setters
     public UUID getId() {

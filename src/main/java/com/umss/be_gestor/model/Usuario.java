@@ -45,6 +45,7 @@ public class Usuario {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    
 
     // Getters y setters
     public UUID getId() {

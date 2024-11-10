@@ -5,8 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.umss.be_gestor.dto.EquipoDTO;
+import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.service.EquipoService;
+import com.umss.be_gestor.service.MiembroService;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,8 +17,17 @@ import java.util.UUID;
 @RequestMapping("/equipo")
 public class EquipoController {
 
+
+
     @Autowired
     private EquipoService equipoService;
+
+    private final MiembroService miembroService;
+
+    @Autowired
+    public EquipoController(MiembroService miembroService) {
+        this.miembroService = miembroService;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<EquipoDTO>> getAllEquipos() {
@@ -47,5 +58,14 @@ public class EquipoController {
     public ResponseEntity<Void> deleteEquipo(@PathVariable UUID id) {
         equipoService.deleteEquipo(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * endpoints personalizados
+     */
+    @GetMapping("/{equipoId}/integrantes")
+    public ResponseEntity<List<UsuarioDTO>> getIntegrantesByEquipo(@PathVariable UUID equipoId) {
+        List<UsuarioDTO> integrantes = miembroService.getIntegrantesByEquipo(equipoId);
+        return ResponseEntity.ok(integrantes);
     }
 }

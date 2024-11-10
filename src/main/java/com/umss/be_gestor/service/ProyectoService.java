@@ -1,15 +1,24 @@
 package com.umss.be_gestor.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.umss.be_gestor.dto.EquipoDTO;
 import com.umss.be_gestor.dto.ProyectoDTO;
+import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
+import com.umss.be_gestor.model.Equipo;
+import com.umss.be_gestor.model.Miembro;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.model.Usuario;
+import com.umss.be_gestor.repository.EquipoRepository;
+import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -20,7 +29,14 @@ public class ProyectoService {
     private ProyectoRepository proyectoRepository;
 
     @Autowired
+    private MiembroRepository miembroRepository;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
+
+     @Autowired
+    private EquipoRepository equipoRepository;
+
 
     public List<ProyectoDTO> getAllProyectos() {
         return proyectoRepository.findAll().stream()
@@ -30,6 +46,13 @@ public class ProyectoService {
 
     public List<Proyecto> getFullProyectos() {
         return proyectoRepository.findAll();
+    }
+
+
+    @Autowired
+    public ProyectoService(MiembroRepository miembroRepository) {
+        this.miembroRepository = miembroRepository;
+        
     }
 
     public ProyectoDTO getProyectoById(UUID id) {
@@ -121,5 +144,66 @@ public class ProyectoService {
         }
         proyecto.setActivado(proyectoDTO.getActivado());
         return proyecto;
+    }
+
+
+    public List<ProyectoDTO> getProyectosPorProjectManager(UUID projectManagerId) {
+        return proyectoRepository.findByProjectManagerId(projectManagerId)
+                .stream()
+                .map(DTOConverter::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProyectoDTO> getProyectosComoProjectManager(UUID projectManagerId) {
+        List<Proyecto> proyectos = proyectoRepository.findByProjectManagerId(projectManagerId);
+        
+        return proyectos.stream().map(proyecto -> {
+            ProyectoDTO proyectoDTO = DTOConverter.convertToProyectoDTO(proyecto);
+            
+            // Agregar equipos al proyecto
+            List<Equipo> equipos = equipoRepository.findByProyectoId(proyecto.getId());
+            List<EquipoDTO> equipoDTOs = equipos.stream()
+                                                 .map(DTOConverter::convertToEquipoDTO)
+                                                 .collect(Collectors.toList());
+            proyectoDTO.setEquipos(equipoDTOs);
+            
+            return proyectoDTO;
+        }).collect(Collectors.toList());
+    }
+
+
+
+    public List<ProyectoDTO> getProyectosConEquiposEIntegrantesPorUsuario(UUID usuarioId) {
+        // Obtiene todos los miembros donde el usuario es parte
+        List<Miembro> miembros = miembroRepository.findByUsuario_Id(usuarioId);
+
+        // Agrupa los equipos por proyecto
+        Map<Proyecto, List<Equipo>> proyectosConEquipos = miembros.stream()
+                .collect(Collectors.groupingBy(
+                        miembro -> miembro.getEquipo().getProyecto(),
+                        Collectors.mapping(Miembro::getEquipo, Collectors.toList())
+                ));
+
+        // Convierte cada proyecto y sus equipos e integrantes a DTO
+        return proyectosConEquipos.entrySet().stream().map(entry -> {
+            Proyecto proyecto = entry.getKey();
+            List<Equipo> equipos = entry.getValue();
+
+            ProyectoDTO proyectoDTO = DTOConverter.convertToProyectoDTO(proyecto);
+            proyectoDTO.setEquipos(equipos.stream().map(equipo -> {
+                EquipoDTO equipoDTO = DTOConverter.convertToEquipoDTO(equipo);
+
+                // Agrega los integrantes del equipo
+                List<UsuarioDTO> integrantes = miembros.stream()
+                        .filter(miembro -> miembro.getEquipo().getId().equals(equipo.getId()))
+                        .map(miembro -> DTOConverter.convertToUsuarioDTO(miembro.getUsuario()))
+                        .collect(Collectors.toList());
+
+                equipoDTO.setIntegrantes(integrantes);
+                return equipoDTO;
+            }).collect(Collectors.toList()));
+
+            return proyectoDTO;
+        }).collect(Collectors.toList());
     }
 }

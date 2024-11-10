@@ -1,7 +1,6 @@
 package com.umss.be_gestor.dto;
 
 
-import java.util.List;
 import java.util.UUID;
 
 public class AuthenticationResponseDTO {
@@ -17,15 +16,15 @@ public class AuthenticationResponseDTO {
     private String username;
     private String nombres;
     private String apellidos;
-    private List<UUID> projectUUIDs;
+    //private List<UUID> projectUUIDs;
 
-    public AuthenticationResponseDTO(String jwt, UUID id,String username, String nombres, String apellidos, List<UUID> projectUUIDs) {
+    public AuthenticationResponseDTO(String jwt, UUID id,String username, String nombres, String apellidos) {
         this.jwt = jwt;
         this.id =id;
         this.username = username;
         this.nombres = nombres;
         this.apellidos = apellidos;
-        this.projectUUIDs = projectUUIDs;
+        //this.projectUUIDs = projectUUIDs;
     }
     public AuthenticationResponseDTO(){
 
@@ -64,11 +63,11 @@ public class AuthenticationResponseDTO {
         this.apellidos = apellidos;
     }
 
-    public List<UUID> getProjectUUIDs() {
-        return projectUUIDs;
-    }
+    // public List<UUID> getProjectUUIDs() {
+    //     return projectUUIDs;
+    // }
 
-    public void setProjectUUIDs(List<UUID> projectUUIDs) {
-        this.projectUUIDs = projectUUIDs;
-    }
+    // public void setProjectUUIDs(List<UUID> projectUUIDs) {
+    //     this.projectUUIDs = projectUUIDs;
+    // }
 }

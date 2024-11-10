@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.umss.be_gestor.dto.MiembroDTO;
+import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Miembro;
 import com.umss.be_gestor.model.MiembroId;
@@ -14,6 +15,7 @@ import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.model.Rol;
 import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.util.DTOConverter;
 import com.umss.be_gestor.repository.EquipoRepository;
 import com.umss.be_gestor.repository.RolRepository;
 
@@ -37,6 +39,8 @@ public class MiembroService {
     @Autowired
     private RolRepository rolRepository;
 
+    private final DTOConverter dtoConverter;
+
     public List<MiembroDTO> getAllMiembros() {
         return miembroRepository.findAll().stream()
                 .map(this::convertToDTO)
@@ -45,6 +49,18 @@ public class MiembroService {
 
     public List<Miembro> getFullMiembros() {
         return miembroRepository.findAll();
+    }
+
+    @Autowired
+    public MiembroService(MiembroRepository miembroRepository, DTOConverter dtoConverter) {
+        this.miembroRepository = miembroRepository;
+        this.dtoConverter = dtoConverter;
+    }
+
+    public List<UsuarioDTO> getIntegrantesByEquipo(UUID equipoId) {
+        return miembroRepository.findByEquipo_Id(equipoId).stream()
+                .map(miembro -> DTOConverter.convertToUsuarioDTO(miembro.getUsuario()))
+                .collect(Collectors.toList());
     }
 
     public MiembroDTO getMiembroById(UUID usuarioId, UUID equipoId, UUID rolId) {
@@ -56,6 +72,7 @@ public class MiembroService {
         }
         return convertToDTO(miembro);
     }
+    
 
     public MiembroDTO createMiembro(MiembroDTO miembroDTO) {
     // Verificar si la combinación de usuario, equipo y rol ya existe

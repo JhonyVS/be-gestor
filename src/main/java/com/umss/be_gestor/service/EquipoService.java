@@ -1,13 +1,18 @@
 package com.umss.be_gestor.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.umss.be_gestor.dto.EquipoDTO;
+import com.umss.be_gestor.dto.UsuarioConRolDTO;
+import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.repository.EquipoRepository;
+import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
+import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +27,16 @@ public class EquipoService {
 
     @Autowired
     private ProyectoRepository proyectoRepository;
+
+    @Autowired
+    private MiembroRepository miembroRepository;
+
+
+    @Autowired
+    public EquipoService(EquipoRepository equipoRepository, MiembroRepository miembroRepository) {
+        this.equipoRepository = equipoRepository;
+        this.miembroRepository = miembroRepository;
+    }
 
     public List<EquipoDTO> getAllEquipos() {
         return equipoRepository.findAll().stream()
@@ -104,4 +119,32 @@ public class EquipoService {
         equipo.setActivado(equipoDTO.getActivado());
         return equipo;
     }
+
+    /**
+     * endpoints personalizados
+     */
+
+     public List<EquipoDTO> getEquiposConIntegrantesPorProyecto(UUID projectId) {
+        List<Equipo> equipos = equipoRepository.findByProyectoId(projectId);
+    
+        return equipos.stream().map(equipo -> {
+            EquipoDTO equipoDTO = DTOConverter.convertToEquipoDTO(equipo);
+    
+            // Obtener los integrantes del equipo a través de MiembroRepository
+            List<UsuarioDTO> integrantes = miembroRepository.findByEquipoId(equipo.getId()).stream()
+                    .map(miembro -> {
+                        UsuarioDTO usuarioDTO = DTOConverter.convertToUsuarioDTO(miembro.getUsuario());
+                        usuarioDTO.setRol(miembro.getRol().getNombre()); // Asigna el nombre del rol
+                        return usuarioDTO;
+                    })
+                    .collect(Collectors.toList());
+    
+            equipoDTO.setIntegrantes(integrantes);
+            return equipoDTO;
+        }).collect(Collectors.toList());
+    }
+    
+
+
+  
 }
