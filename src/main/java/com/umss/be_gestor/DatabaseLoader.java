@@ -54,8 +54,8 @@ public class DatabaseLoader {
     private String[] tarjetasArray = {
         "ToDo",
         "Working",
-        "Review",
         "Done",
+        "Review",
         "Backlog"
     };
 
@@ -328,8 +328,8 @@ public class DatabaseLoader {
                 // Solo obtener tarjetas que pertenecen a tableros con un workspace asignado
                 List<Tarjeta> tarjetas = tarjetaRepository.findTarjetasWithTableroWorkspace();
                 for (Tarjeta tarjeta : tarjetas) {
-                    num = r.nextInt(5);
-                    for (int i = 0; i < num; i++) {
+                    //num = r.nextInt(5);
+                    for (int i = 0; i < 3; i++) {
                         Tarea tarea = new Tarea();
                         tarea.setTitulo(tareasArray[faker.number().numberBetween(0,tareasArray.length)]);
                         tarea.setDescripcion(faker.lorem().paragraph());
@@ -363,7 +363,7 @@ public class DatabaseLoader {
 
             // Poblar Roles
             if (rolRepository.count() == 0) {
-                String[] roles = {"Scrum Master","Designer UX", "Desarrollador", "Tester"};
+                String[] roles = {"Scrum Master","Designer UX", "Developer", "QA Tester"};
                 for (String roleName : roles) {
                     Rol rol = new Rol();
                     rol.setNombre(roleName);
@@ -389,7 +389,7 @@ public class DatabaseLoader {
                     for (int i = 0; i < num + 1; i++) {
                         Usuario usuario = usuarios.get(faker.number().numberBetween(0, usuarios.size()));
                         //la condicion es para asegurar solamente un scrum master por equipo
-                        Rol rol = i == 0 ? roles.get(faker.number().numberBetween(1, roles.size())): roles.get(0);
+                        Rol rol = i == 0 ? roles.get(0) : roles.get(faker.number().numberBetween(1, roles.size()));
 
                         // Verifica si ya existe un miembro con la misma combinación de usuario y equipo
                         if (!miembroRepository.existsByUsuarioAndEquipo(usuario, equipo)) {

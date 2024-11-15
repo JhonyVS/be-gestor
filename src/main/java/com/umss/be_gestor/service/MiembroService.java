@@ -39,7 +39,6 @@ public class MiembroService {
     @Autowired
     private RolRepository rolRepository;
 
-    private final DTOConverter dtoConverter;
 
     public List<MiembroDTO> getAllMiembros() {
         return miembroRepository.findAll().stream()
@@ -54,7 +53,6 @@ public class MiembroService {
     @Autowired
     public MiembroService(MiembroRepository miembroRepository, DTOConverter dtoConverter) {
         this.miembroRepository = miembroRepository;
-        this.dtoConverter = dtoConverter;
     }
 
     public List<UsuarioDTO> getIntegrantesByEquipo(UUID equipoId) {
