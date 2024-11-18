@@ -1,6 +1,5 @@
 package com.umss.be_gestor.util;
 
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -8,6 +7,11 @@ import com.umss.be_gestor.dto.*;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
 import com.umss.be_gestor.repository.UsuarioRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+
 
 @Component
 public class DTOConverter {
@@ -114,15 +118,41 @@ public class DTOConverter {
         equipoDTO.setProyectoId(equipo.getProyecto().getId());
         equipoDTO.setActivado(equipo.getActivado());
     
-        System.out.println("Integrantes del equipo " + equipo.getNombre() + ": " + equipo.getIntegrantes());
-    
+        // Convertir miembros a UsuarioDTO
         equipoDTO.setIntegrantes(
-            equipo.getIntegrantes().stream()
-                .map(DTOConverter::convertToUsuarioDTO)
+            equipo.getMiembros().stream()
+                .map(miembro -> convertToUsuarioDTO(miembro.getUsuario()))
                 .collect(Collectors.toList())
         );
+    
         return equipoDTO;
     }
+    
+    
+    
+    
+
+    // public static EquipoDTO convertToEquipoDTO(Equipo equipo) {
+    //     EquipoDTO equipoDTO = new EquipoDTO();
+    //     equipoDTO.setId(equipo.getId());
+    //     equipoDTO.setNombre(equipo.getNombre());
+    //     equipoDTO.setProyectoId(equipo.getProyecto() != null ? equipo.getProyecto().getId() : null);
+    //     equipoDTO.setActivado(equipo.getActivado());
+    
+    //     equipoDTO.setIntegrantes(
+    //         equipo.getIntegrantes().stream()
+    //             .map(miembro -> DTOConverter.convertToUsuarioDTO(miembro.getUsuario()))
+    //             .collect(Collectors.toList())
+    //     );
+    
+    //     return equipoDTO;
+    // }
+    
+    
+    
+    
+    
+    
     
     
     public static UsuarioDTO convertToUsuarioDTO(Usuario usuario) {
@@ -146,6 +176,8 @@ public class DTOConverter {
         dto.setActivado(proyecto.getActivado());
         return dto;
     }
+
+
 
     
 

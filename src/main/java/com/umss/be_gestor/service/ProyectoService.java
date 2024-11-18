@@ -154,21 +154,16 @@ public class ProyectoService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProyectoDTO> getProyectosComoProjectManager(UUID projectManagerId) {
-        List<Proyecto> proyectos = proyectoRepository.findByProjectManagerId(projectManagerId);
-        
-        return proyectos.stream().map(proyecto -> {
-            ProyectoDTO proyectoDTO = DTOConverter.convertToProyectoDTO(proyecto);
-            
-            // Agregar equipos al proyecto
-            List<Equipo> equipos = equipoRepository.findByProyectoId(proyecto.getId());
-            List<EquipoDTO> equipoDTOs = equipos.stream()
-                                                 .map(DTOConverter::convertToEquipoDTO)
-                                                 .collect(Collectors.toList());
-            proyectoDTO.setEquipos(equipoDTOs);
-            
-            return proyectoDTO;
-        }).collect(Collectors.toList());
+    public List<ProyectoDTO> getProyectosByProjectManager(UUID projectManagerId) {
+        List<Proyecto> proyectos = proyectoRepository.findAllByProjectManagerId(projectManagerId);
+    
+        if (proyectos.isEmpty()) {
+            throw new NotFoundException("No se encontraron proyectos para el Project Manager con ID: " + projectManagerId, null);
+        }
+    
+        return proyectos.stream()
+                .map(DTOConverter::convertToProyectoDTO)
+                .collect(Collectors.toList());
     }
 
 

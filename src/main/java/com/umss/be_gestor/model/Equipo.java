@@ -20,20 +20,17 @@ public class Equipo {
     @JoinColumn(name = "id_proyecto", nullable = false)
     private Proyecto proyecto;
 
-    @ManyToMany
-    @JoinTable(
-        name = "equipo_usuario",
-        joinColumns = @JoinColumn(name = "equipo_id"),
-        inverseJoinColumns = @JoinColumn(name = "usuario_id")
-    )
-    private List<Usuario> integrantes;
 
-    public List<Usuario> getIntegrantes() {
-        return integrantes;
+    @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Miembro> miembros;
+
+
+    public List<Miembro> getMiembros() {
+        return miembros;
     }
 
-    public void setIntegrantes(List<Usuario> integrantes) {
-        this.integrantes = integrantes;
+    public void setMiembros(List<Miembro> miembros) {
+        this.miembros = miembros;
     }
 
     @Column(name = "activado", nullable = false)

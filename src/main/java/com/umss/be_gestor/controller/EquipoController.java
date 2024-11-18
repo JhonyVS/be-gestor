@@ -68,4 +68,11 @@ public class EquipoController {
         List<UsuarioDTO> integrantes = miembroService.getIntegrantesByEquipo(equipoId);
         return ResponseEntity.ok(integrantes);
     }
+
+    @GetMapping("/by-project-manager/{projectManagerId}")
+    public ResponseEntity<List<EquipoDTO>> getEquiposByProjectManager(@PathVariable UUID projectManagerId) {
+        List<EquipoDTO> equipos = equipoService.getEquiposByProjectManager(projectManagerId);
+        return ResponseEntity.ok(equipos);
+    }
+
 }

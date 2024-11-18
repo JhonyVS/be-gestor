@@ -2,6 +2,8 @@ package com.umss.be_gestor.dto;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.Objects;
+
 
 public class UsuarioDTO {
     
@@ -84,6 +86,20 @@ public class UsuarioDTO {
     public void setMotivoSuspension(String motivoSuspension) {
         this.motivoSuspension = motivoSuspension;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UsuarioDTO that = (UsuarioDTO) o;
+        return Objects.equals(id, that.id); // Compara por ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Genera hash basado en ID
+    }
+
 
     // Getters y setters
 }

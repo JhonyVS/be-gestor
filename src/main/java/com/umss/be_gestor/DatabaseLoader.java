@@ -7,6 +7,7 @@ import com.umss.be_gestor.model.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -27,7 +28,7 @@ public class DatabaseLoader {
     private PasswordEncoder passwordEncoder;
 
     // Vector de tareas
-    private String[] tareasArray= {
+    private String[] tareasDevs= {
         "Definir requisitos",
         "Crear mockups",
         "Desarrollar backend",
@@ -49,6 +50,29 @@ public class DatabaseLoader {
         "Actualizar documentación",
         "Preparar informe final"
     };
+
+    List<String> tasks = Arrays.asList(
+            "Planificación inicial del proyecto",
+            "Asignación de recursos",
+            "Revisión de requisitos",
+            "Creación del cronograma del proyecto",
+            "Gestión de riesgos",
+            "Reunión de revisión de sprint",
+            "Monitoreo del progreso",
+            "Gestión de comunicación con el cliente",
+            "Evaluación de entregables",
+            "Retrospectiva del proyecto",
+            "Control de presupuesto del proyecto",
+            "Definición de hitos importantes",
+            "Ajuste de objetivos según cambios de alcance",
+            "Identificación de cuellos de botella",
+            "Facilitación de reuniones diarias (stand-ups)",
+            "Coordinación de tareas con otros departamentos",
+            "Revisión de KPIs y métricas del proyecto",
+            "Actualización del plan de riesgos",
+            "Gestión de expectativas de los interesados",
+            "Documentación del progreso y resultados del proyecto"
+        );
 
     // Vector de nombres de tableros
     private String[] tarjetasArray = {
@@ -259,7 +283,7 @@ public class DatabaseLoader {
                     num = r.nextInt(5);
                     for (int i = 0; i < num; i++) {
                         Tarea tarea = new Tarea();
-                        tarea.setTitulo(tareasArray[faker.number().numberBetween(0,tareasArray.length)]);
+                        tarea.setTitulo(tareasDevs[faker.number().numberBetween(0,tareasDevs.length)]);
                         tarea.setDescripcion(faker.lorem().paragraph());
                         tarea.setTarjeta(tarjeta);
                         tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
@@ -289,11 +313,15 @@ public class DatabaseLoader {
             //if (tableroRepository.count() == 0) {
                 List<Workspace> workspaces = workspaceRepository.findAll();
                 Random r = new Random();
+                Tablero tablero;
+                Tarjeta tarjeta;
+                Tarea tarea;
                 int num;
+                int num2;
                 for (Workspace workspace: workspaces) {
-                    num = r.nextInt(3)+1;
+                    num = r.nextInt(2)+1;
                     for (int i = 0; i < num; i++) {
-                        Tablero tablero = new Tablero();
+                        tablero = new Tablero();
                         tablero.setTitulo(faker.lorem().word());
                         tablero.setDescripcion(faker.lorem().sentence());
                         tablero.setWorkspace(workspace);
@@ -301,46 +329,32 @@ public class DatabaseLoader {
                         tablero.setUpdatedAt(LocalDateTime.now());
                         tablero.setCreatedAt(LocalDateTime.now());
                         tableroRepository.save(tablero);
+
+                        for (int j = 0; j < 3; j++) {
+                            tarjeta = new Tarjeta();
+                            tarjeta.setTitulo(tarjetasArray[j]);
+                            tarjeta.setDescripcion(faker.lorem().paragraph());
+                            tarjeta.setTablero(tablero);
+                            tarjeta.setActivado(true);
+                            tarjeta.setCreatedAt(LocalDateTime.now());
+                            tarjeta.setUpdatedAt(LocalDateTime.now());
+                            tarjetaRepository.save(tarjeta);   
+                            
+                            num2 = r.nextInt(5)+3;
+                            for (int k = 0; k < num2; k++) {
+                                tarea = new Tarea();
+                                tarea.setTitulo(tasks.get(faker.number().numberBetween(0,tasks.size())));
+                                tarea.setDescripcion(faker.lorem().paragraph());
+                                tarea.setTarjeta(tarjeta);
+                                tarea.setActivado(true);
+                                tarea.setCreatedAt(LocalDateTime.now());
+                                tarea.setUpdatedAt(LocalDateTime.now());
+                                tareaRepository.save(tarea);                      
+                            }
+                        }
+
                     }
                 }
-            //}
-
-            // Poblar Tarjetas de workspaces
-            //if (tarjetaRepository.count() == 0) {
-                List<Tablero> tableros = tableroRepository.findByWorkspaceIdIsNotNull();
-                for (Tablero tablero : tableros) {
-                    num = r.nextInt(3)+1;
-                    for (int i = 0; i < num; i++) {
-                        Tarjeta tarjeta = new Tarjeta();
-                        tarjeta.setTitulo(tarjetasArray[i]);
-                        tarjeta.setDescripcion(faker.lorem().paragraph());
-                        tarjeta.setTablero(tablero);
-                        tarjeta.setActivado(true);
-                        tarjeta.setCreatedAt(LocalDateTime.now());
-                        tarjeta.setUpdatedAt(LocalDateTime.now());
-                        tarjetaRepository.save(tarjeta);                         
-                    }
-                }
-            //}
-
-            // Poblar Tareas de proyectos de equipos
-            //if (tareaRepository.count() == 0) {
-                // Solo obtener tarjetas que pertenecen a tableros con un workspace asignado
-                List<Tarjeta> tarjetas = tarjetaRepository.findTarjetasWithTableroWorkspace();
-                for (Tarjeta tarjeta : tarjetas) {
-                    //num = r.nextInt(5);
-                    for (int i = 0; i < 3; i++) {
-                        Tarea tarea = new Tarea();
-                        tarea.setTitulo(tareasArray[faker.number().numberBetween(0,tareasArray.length)]);
-                        tarea.setDescripcion(faker.lorem().paragraph());
-                        tarea.setTarjeta(tarjeta);
-                        tarea.setActivado(true);
-                        tarea.setCreatedAt(LocalDateTime.now());
-                        tarea.setUpdatedAt(LocalDateTime.now());
-                        tareaRepository.save(tarea);                      
-                    }
-                } 
-            //}
             }
 
             // Poblar SprintBacklogs

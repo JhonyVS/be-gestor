@@ -62,16 +62,21 @@ public class ProyectoController {
      */
 
      @GetMapping("/mis-proyectos/{projectManagerId}")
-     public ResponseEntity<List<ProyectoDTO>> getProyectosPorProjectManager(@PathVariable UUID projectManagerId) {
-         List<ProyectoDTO> proyectos = proyectoService.getProyectosComoProjectManager(projectManagerId);
-         return ResponseEntity.ok(proyectos);
-     }
+    public ResponseEntity<List<ProyectoDTO>> getMisProyectos(@PathVariable UUID projectManagerId) {
+        List<ProyectoDTO> proyectos = proyectoService.getProyectosByProjectManager(projectManagerId);
+        return ResponseEntity.ok(proyectos);
+    }
+    //  @GetMapping("/{projectId}/equipos")
+    //  public ResponseEntity<List<EquipoDTO>> getEquiposConIntegrantes(@PathVariable UUID projectId) {
+    //      List<EquipoDTO> equipos = equipoService.getEquiposConIntegrantesPorProyecto(projectId);
+    //      return ResponseEntity.ok(equipos);
+    //  }
 
      @GetMapping("/{projectId}/equipos")
-     public ResponseEntity<List<EquipoDTO>> getEquiposConIntegrantes(@PathVariable UUID projectId) {
-         List<EquipoDTO> equipos = equipoService.getEquiposConIntegrantesPorProyecto(projectId);
-         return ResponseEntity.ok(equipos);
-     }
+    public ResponseEntity<List<EquipoDTO>> getEquiposByProyecto(@PathVariable UUID projectId) {
+        List<EquipoDTO> equipos = equipoService.getEquiposByProyectoId(projectId);
+        return ResponseEntity.ok(equipos);
+    }
 
      @GetMapping("/mis-proyectos-equipos/{usuarioId}")
     public ResponseEntity<List<ProyectoDTO>> getProyectosConEquiposEIntegrantesPorUsuario(@PathVariable UUID usuarioId) {

@@ -12,6 +12,8 @@ public class EquipoDTO {
 
     private List<UsuarioDTO> integrantes;
 
+    
+
     public List<UsuarioDTO> getIntegrantes() {
         return integrantes;
     }
