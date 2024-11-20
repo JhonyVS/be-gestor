@@ -72,11 +72,12 @@ public class ProyectoController {
     //      return ResponseEntity.ok(equipos);
     //  }
 
-     @GetMapping("/{projectId}/equipos")
+    @GetMapping("/{projectId}/equipos")
     public ResponseEntity<List<EquipoDTO>> getEquiposByProyecto(@PathVariable UUID projectId) {
-        List<EquipoDTO> equipos = equipoService.getEquiposByProyectoId(projectId);
+        List<EquipoDTO> equipos = equipoService.getEquiposByProyecto(projectId);
         return ResponseEntity.ok(equipos);
     }
+
 
      @GetMapping("/mis-proyectos-equipos/{usuarioId}")
     public ResponseEntity<List<ProyectoDTO>> getProyectosConEquiposEIntegrantesPorUsuario(@PathVariable UUID usuarioId) {

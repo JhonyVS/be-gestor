@@ -74,5 +74,6 @@ public class EquipoController {
         List<EquipoDTO> equipos = equipoService.getEquiposByProjectManager(projectManagerId);
         return ResponseEntity.ok(equipos);
     }
+    
 
 }
