@@ -8,7 +8,6 @@ import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
 import com.umss.be_gestor.repository.UsuarioRepository;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 

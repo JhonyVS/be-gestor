@@ -6,19 +6,12 @@ import com.umss.be_gestor.dto.EquipoDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Equipo;
-import com.umss.be_gestor.model.Miembro;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.EquipoRepository;
-import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
-import com.umss.be_gestor.util.DTOConverter;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,14 +24,12 @@ public class EquipoService {
     @Autowired
     private ProyectoRepository proyectoRepository;
 
-    @Autowired
-    private MiembroRepository miembroRepository;
 
 
     @Autowired
-    public EquipoService(EquipoRepository equipoRepository, MiembroRepository miembroRepository) {
+    public EquipoService(EquipoRepository equipoRepository) {
         this.equipoRepository = equipoRepository;
-        this.miembroRepository = miembroRepository;
+
     }
 
     public List<EquipoDTO> getAllEquipos() {

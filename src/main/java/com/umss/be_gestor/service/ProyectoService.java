@@ -10,7 +10,6 @@ import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.model.Miembro;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.model.Usuario;
-import com.umss.be_gestor.repository.EquipoRepository;
 import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
@@ -34,8 +33,6 @@ public class ProyectoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-     @Autowired
-    private EquipoRepository equipoRepository;
 
 
     public List<ProyectoDTO> getAllProyectos() {
