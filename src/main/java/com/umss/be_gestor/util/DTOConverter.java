@@ -182,7 +182,8 @@ public class DTOConverter {
             comentario.getId(),
             usuarioBasicoDTO, // Usuario en formato UsuarioBasicDTO
             comentario.getProyecto().getId(),
-            comentario.getContenido()
+            comentario.getContenido(),
+            comentario.getCreatedAt()
         );
     }
     

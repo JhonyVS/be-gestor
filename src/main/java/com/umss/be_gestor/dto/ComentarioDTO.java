@@ -11,13 +11,6 @@ public class ComentarioDTO {
     private UUID idProyecto;
     private String contenido;
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 
     public UsuarioBasicoDTO getUsuario() {
         return usuario;
@@ -31,12 +24,12 @@ public class ComentarioDTO {
     public ComentarioDTO() {}
 
     // Constructor completo
-    public ComentarioDTO(UUID id,UsuarioBasicoDTO usuario, UUID idProyecto, String contenido) {
+    public ComentarioDTO(UUID id,UsuarioBasicoDTO usuario, UUID idProyecto, String contenido,LocalDateTime createdAt) {
         this.id=id;
         this.idProyecto = idProyecto;
         this.usuario = usuario;
         this.contenido = contenido;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     // Getters y setters
@@ -62,5 +55,12 @@ public class ComentarioDTO {
 
     public void setContenido(String contenido) {
         this.contenido = contenido;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

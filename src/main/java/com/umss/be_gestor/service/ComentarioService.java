@@ -63,7 +63,8 @@ public class ComentarioService {
                         comentario.getId(), // Asegúrate de que el ID esté incluido aquí
                         usuarioBasicoDTO,
                         comentario.getProyecto().getId(),
-                        comentario.getContenido()
+                        comentario.getContenido(),
+                        comentario.getCreatedAt()
                     );
                 })
                 .collect(Collectors.toList());
