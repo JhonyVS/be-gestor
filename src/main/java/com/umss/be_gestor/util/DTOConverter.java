@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import com.umss.be_gestor.dto.*;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
+import com.umss.be_gestor.repository.ProyectoRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
 
 import java.util.stream.Collectors;
@@ -176,6 +177,94 @@ public class DTOConverter {
         return dto;
     }
 
+    public static ComentarioDTO convertirADTO(Comentario comentario, UsuarioBasicoDTO usuarioBasicoDTO) {
+        return new ComentarioDTO(
+            comentario.getId(),
+            usuarioBasicoDTO, // Usuario en formato UsuarioBasicDTO
+            comentario.getProyecto().getId(),
+            comentario.getContenido()
+        );
+    }
+    
+    
+    public static Comentario convertirADominio(ComentarioDTO comentarioDTO, UsuarioRepository usuarioRepository) {
+        Comentario comentario = new Comentario();
+        comentario.setId(comentarioDTO.getId());
+    
+        Proyecto proyecto = new Proyecto();
+        proyecto.setId(comentarioDTO.getIdProyecto());
+        comentario.setProyecto(proyecto);
+        Usuario usuario = usuarioRepository.findById(comentarioDTO.getUsuario().getId()).orElse(null);
+        if (usuario == null) {
+            throw new NotFoundException("Usuario", comentarioDTO.getIdProyecto().toString());
+        }
+        comentario.setUsuario(usuario);
+        comentario.setContenido(comentarioDTO.getContenido());
+        return comentario;
+    }
+    
+    // Conversión de Evento a EventoDTO
+    public static EventoDTO convertirADTO(Evento evento) {
+        if (evento == null) {
+            return null;
+        }
+        return new EventoDTO(
+                evento.getId(),
+                evento.getProyecto().getId(),
+                evento.getTitulo(),
+                evento.getDescripcion(),
+                evento.getFechaInicio(),
+                evento.getFechaFin()
+        );
+    }
+
+    // Conversión de EventoDTO a Evento
+    public static Evento convertirADominio(EventoDTO eventoDTO, ProyectoRepository proyectoRepository) {
+        if (eventoDTO == null) {
+            return null;
+        }
+        Evento evento = new Evento();
+        evento.setId(eventoDTO.getId());
+        Proyecto proyecto = proyectoRepository.findById(eventoDTO.getIdProyecto()).orElse(null);
+        if(proyecto == null){
+            throw new NotFoundException("Proyecto", eventoDTO.getIdProyecto().toString());
+        }
+        evento.setProyecto(proyecto);
+        evento.setTitulo(eventoDTO.getTitulo());
+        evento.setDescripcion(eventoDTO.getDescripcion());
+        evento.setFechaInicio(eventoDTO.getFechaInicio());
+        evento.setFechaFin(eventoDTO.getFechaFin());
+        return evento;
+    }
+
+    public static UsuarioBasicoDTO convertirAUsuarioBasicoDTO(Usuario usuario) {
+        if (usuario == null) {
+            return null;
+        }
+        return new UsuarioBasicoDTO(
+                usuario.getId(),
+                usuario.getNombres(),
+                usuario.getApellidos(),
+                usuario.getEmail(),
+                usuario.getNacimiento().toString(),
+                usuario.getUsername()
+        );
+    }
+
+    public static UsuarioBasicoDTO convertirAUsuarioBasicDTO(Usuario usuario, UsuarioRepository usuarioRepository) {
+        Usuario us = usuarioRepository.findById(usuario.getId()).orElse(null);
+        if (us == null) {
+            throw new NotFoundException("Usuario", usuario.getId().toString());
+        }
+        UsuarioBasicoDTO usuarioBasicoDTO = new UsuarioBasicoDTO();
+        usuarioBasicoDTO.setNombres(us.getNombres());
+        usuarioBasicoDTO.setApellidos(us.getApellidos());
+        usuarioBasicoDTO.setEmail(us.getEmail());
+        usuarioBasicoDTO.setId(us.getId());
+
+        return usuarioBasicoDTO;
+    }
+    
 
 
     

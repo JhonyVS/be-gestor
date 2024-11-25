@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
+import com.umss.be_gestor.dto.UsuarioBasicoDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Usuario;
@@ -74,4 +75,10 @@ public class UsuarioController {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/{id}/basic")
+    public ResponseEntity<UsuarioBasicoDTO> obtenerDatosBasicos(@PathVariable UUID id) {
+        UsuarioBasicoDTO usuarioBasicDTO = usuarioService.obtenerUsuarioPorId(id);
+        return ResponseEntity.ok(usuarioBasicDTO);
+    }
+
 }

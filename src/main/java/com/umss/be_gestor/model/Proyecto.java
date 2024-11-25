@@ -12,6 +12,10 @@ public class Proyecto {
     @GeneratedValue
     private UUID id;
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 

@@ -4,10 +4,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.umss.be_gestor.dto.UsuarioBasicoDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -162,4 +164,11 @@ public class UsuarioService {
         // Lógica para obtener los UUIDs de los proyectos a los que pertenece el usuario
         return usuarioRepository.findProjectUUIDsByUserId(userId); 
     }
+
+    public UsuarioBasicoDTO obtenerUsuarioPorId(UUID id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado", null));
+        return DTOConverter.convertirAUsuarioBasicoDTO(usuario); 
+    }
+    
 }
