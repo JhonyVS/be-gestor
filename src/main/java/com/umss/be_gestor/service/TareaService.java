@@ -12,6 +12,7 @@ import com.umss.be_gestor.repository.TareaRepository;
 import com.umss.be_gestor.repository.HistoriaRepository;
 import com.umss.be_gestor.repository.TarjetaRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ public class TareaService {
 
     public List<TareaDTO> getAllTareas() {
         return tareaRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(DTOConverter::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -48,16 +49,16 @@ public class TareaService {
         if (tarea == null) {
             throw new NotFoundException("Tarea", id.toString());
         }
-        return convertToDTO(tarea);
+        return DTOConverter.convertToDTO(tarea);
     }
 
     public TareaDTO createTarea(TareaDTO tareaDTO) {
-        Tarea tarea = convertToEntity(tareaDTO);
+        Tarea tarea = DTOConverter.convertToEntity(tareaDTO,historiaRepository,tarjetaRepository,usuarioRepository);
         tarea.setCreatedAt(LocalDateTime.now());
         tarea.setUpdatedAt(LocalDateTime.now());
         tarea.setActivado(true); // Inicializar activado como true
         tarea = tareaRepository.save(tarea);
-        return convertToDTO(tarea);
+        return DTOConverter.convertToDTO(tarea);
     }
 
     public TareaDTO updateTarea(UUID id, TareaDTO tareaDTO) {
@@ -90,10 +91,10 @@ public class TareaService {
             }
             tarea.setTarjeta(tarjeta);
         }
-        if (tareaDTO.getUsuarioAsignadoId() != null) {
-            Usuario usuarioAsignado = usuarioRepository.findById(tareaDTO.getUsuarioAsignadoId()).orElse(null);
+        if (tareaDTO.getUsuarioAsignado() != null) {
+            Usuario usuarioAsignado = usuarioRepository.findById(tareaDTO.getUsuarioAsignado().getId()).orElse(null);
             if (usuarioAsignado == null) {
-                throw new NotFoundException("Usuario", tareaDTO.getUsuarioAsignadoId().toString());
+                throw new NotFoundException("Usuario", tareaDTO.getUsuarioAsignado().getId().toString());
             }
             tarea.setUsuarioAsignado(usuarioAsignado);
         }
@@ -103,7 +104,7 @@ public class TareaService {
 
         tarea.setUpdatedAt(LocalDateTime.now());
         tarea = tareaRepository.save(tarea);
-        return convertToDTO(tarea);
+        return DTOConverter.convertToDTO(tarea);
     }
 
     public void deleteTarea(UUID id) {
@@ -114,50 +115,5 @@ public class TareaService {
         tareaRepository.delete(tarea);
     }
 
-    private TareaDTO convertToDTO(Tarea tarea) {
-        TareaDTO tareaDTO = new TareaDTO();
-        tareaDTO.setId(tarea.getId());
-        tareaDTO.setTitulo(tarea.getTitulo());
-        tareaDTO.setDescripcion(tarea.getDescripcion());
-        tareaDTO.setEstimacion(tarea.getEstimacion());
-        tareaDTO.setHistoriaId(tarea.getHistoria() != null ? tarea.getHistoria().getId() : null);
-        tareaDTO.setTarjetaId(tarea.getTarjeta() != null ? tarea.getTarjeta().getId() : null);
-        tareaDTO.setUsuarioAsignadoId(tarea.getUsuarioAsignado() != null ? tarea.getUsuarioAsignado().getId() : null);
-        tareaDTO.setActivado(tarea.getActivado());
-        return tareaDTO;
-    }
-
-    private Tarea convertToEntity(TareaDTO tareaDTO) {
-        Tarea tarea = new Tarea();
-        tarea.setTitulo(tareaDTO.getTitulo());
-        tarea.setDescripcion(tareaDTO.getDescripcion());
-        tarea.setEstimacion(tareaDTO.getEstimacion());
-
-        if (tareaDTO.getHistoriaId() != null) {
-            Historia historia = historiaRepository.findById(tareaDTO.getHistoriaId()).orElse(null);
-            if (historia == null) {
-                throw new NotFoundException("Historia", tareaDTO.getHistoriaId().toString());
-            }
-            tarea.setHistoria(historia);
-        }
-
-        if (tareaDTO.getTarjetaId() != null) {
-            Tarjeta tarjeta = tarjetaRepository.findById(tareaDTO.getTarjetaId()).orElse(null);
-            if (tarjeta == null) {
-                throw new NotFoundException("Tarjeta", tareaDTO.getTarjetaId().toString());
-            }
-            tarea.setTarjeta(tarjeta);
-        }
-
-        if (tareaDTO.getUsuarioAsignadoId() != null) {
-            Usuario usuarioAsignado = usuarioRepository.findById(tareaDTO.getUsuarioAsignadoId()).orElse(null);
-            if (usuarioAsignado == null) {
-                throw new NotFoundException("Usuario", tareaDTO.getUsuarioAsignadoId().toString());
-            }
-            tarea.setUsuarioAsignado(usuarioAsignado);
-        }
-
-        tarea.setActivado(tareaDTO.getActivado());
-        return tarea;
-    }
+    
 }

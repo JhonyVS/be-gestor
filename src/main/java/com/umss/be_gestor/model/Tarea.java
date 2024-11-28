@@ -32,6 +32,10 @@ public class Tarea {
 
     @Column(name = "estimacion")
     private Integer estimacion;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_estado", nullable = false)
+    private EstadoTarea estado; // Referencia al modelo Estado
 
     @Column(name = "activado", nullable = false)
     private Boolean activado;
@@ -49,6 +53,10 @@ public class Tarea {
     public UUID getId() {
         return id;
     }
+    public void setId(UUID id){
+        this.id=id;
+    }
+
 
     // No setter para id, para evitar su modificación
 
@@ -98,6 +106,15 @@ public class Tarea {
 
     public void setEstimacion(Integer estimacion) {
         this.estimacion = estimacion;
+    }
+
+    
+    public EstadoTarea getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoTarea estado) {
+        this.estado = estado;
     }
 
     public Boolean getActivado() {

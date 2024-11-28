@@ -58,7 +58,7 @@ public class ComentarioService {
     public List<ComentarioDTO> listarComentariosConAutoresPorProyecto(UUID idProyecto) {
         return comentarioRepository.findByProyectoId(idProyecto).stream()
                 .map(comentario -> {
-                    UsuarioBasicoDTO usuarioBasicoDTO = DTOConverter.convertirAUsuarioBasicDTO(comentario.getUsuario(),usuarioRepository);
+                    UsuarioBasicoDTO usuarioBasicoDTO = DTOConverter.convertirAUsuarioBasicoDTO(comentario.getUsuario());
                     return new ComentarioDTO(
                         comentario.getId(), // Asegúrate de que el ID esté incluido aquí
                         usuarioBasicoDTO,

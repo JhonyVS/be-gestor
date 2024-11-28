@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 import com.umss.be_gestor.dto.*;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
+import com.umss.be_gestor.repository.HistoriaRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
+import com.umss.be_gestor.repository.TarjetaRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
 
 import java.util.stream.Collectors;
@@ -252,22 +254,62 @@ public class DTOConverter {
         );
     }
 
-    public static UsuarioBasicoDTO convertirAUsuarioBasicDTO(Usuario usuario, UsuarioRepository usuarioRepository) {
-        Usuario us = usuarioRepository.findById(usuario.getId()).orElse(null);
-        if (us == null) {
-            throw new NotFoundException("Usuario", usuario.getId().toString());
-        }
-        UsuarioBasicoDTO usuarioBasicoDTO = new UsuarioBasicoDTO();
-        usuarioBasicoDTO.setNombres(us.getNombres());
-        usuarioBasicoDTO.setApellidos(us.getApellidos());
-        usuarioBasicoDTO.setEmail(us.getEmail());
-        usuarioBasicoDTO.setId(us.getId());
+    /** PENDIENTE POR REVISAR */
+    // public static UsuarioBasicoDTO convertirAUsuarioBasicDTO(Usuario usuario, UsuarioRepository usuarioRepository) {
+    //     Usuario us = usuarioRepository.findById(usuario.getId()).orElse(null);
+    //     if (us == null) {
+    //         throw new NotFoundException("Usuario", usuario.getId().toString());
+    //     }
+    //     UsuarioBasicoDTO usuarioBasicoDTO = new UsuarioBasicoDTO();
+    //     usuarioBasicoDTO.setNombres(us.getNombres());
+    //     usuarioBasicoDTO.setApellidos(us.getApellidos());
+    //     usuarioBasicoDTO.setEmail(us.getEmail());
+    //     usuarioBasicoDTO.setId(us.getId());
 
-        return usuarioBasicoDTO;
+    //     return usuarioBasicoDTO;
+    // }
+    
+    public static TareaDTO convertToDTO(Tarea tarea) {
+        TareaDTO tareaDTO = new TareaDTO();
+        tareaDTO.setId(tarea.getId());
+        tareaDTO.setTitulo(tarea.getTitulo());
+        tareaDTO.setDescripcion(tarea.getDescripcion());
+        tareaDTO.setEstimacion(tarea.getEstimacion());
+        tareaDTO.setEstado(tarea.getEstado());
+        tareaDTO.setHistoriaId(tarea.getHistoria() != null ? tarea.getHistoria().getId() : null);
+        tareaDTO.setTarjetaId(tarea.getTarjeta() != null ? tarea.getTarjeta().getId() : null);
+        tareaDTO.setUsuarioAsignado(convertirAUsuarioBasicoDTO(tarea.getUsuarioAsignado()));
+        tareaDTO.setActivado(tarea.getActivado());
+        return tareaDTO;
+    }
+
+    public static Tarea convertToEntity(TareaDTO tareaDTO,HistoriaRepository historiaRepository, TarjetaRepository tarjetaRepository,UsuarioRepository usuarioRepository) {
+        Tarea tarea = new Tarea();
+
+        tarea.setId(tareaDTO.getId());
+        tarea.setTitulo(tareaDTO.getTitulo());
+        tarea.setDescripcion(tareaDTO.getDescripcion());
+        tarea.setEstimacion(tareaDTO.getEstimacion());
+        tarea.setEstado(tareaDTO.getEstado());
+        tarea.setHistoria(historiaRepository.findById(tareaDTO.getHistoriaId()).orElse(null));
+        tarea.setTarjeta(tarjetaRepository.findById(tareaDTO.getTarjetaId()).orElse(null));
+        tarea.setUsuarioAsignado(usuarioRepository.findById(tareaDTO.getUsuarioAsignado().getId()).orElse(null));
+        tarea.setActivado(tareaDTO.getActivado());
+        return tarea;
+    }
+
+    public static EstadoTareaDTO convertToDTO(EstadoTarea estadoTarea) {
+        return new EstadoTareaDTO(estadoTarea.getId(), estadoTarea.getNombre());
+    }
+
+    public static EstadoTarea convertoToEntity(EstadoTareaDTO dto) {
+        EstadoTarea estadoTarea = new EstadoTarea();
+        estadoTarea.setId(dto.getId());
+        estadoTarea.setNombre(dto.getNombre());
+        return estadoTarea;
     }
     
-
-
+    
     
 
     

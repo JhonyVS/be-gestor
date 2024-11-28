@@ -1,0 +1,4 @@
+CREATE TABLE estado_tarea (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+);

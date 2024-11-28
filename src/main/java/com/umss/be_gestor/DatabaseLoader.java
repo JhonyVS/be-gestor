@@ -7,13 +7,13 @@ import com.umss.be_gestor.model.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.HashSet;
 import java.util.Set;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -99,7 +99,8 @@ public class DatabaseLoader {
             MiembroRepository miembroRepository,
             AsignarHistoriaRepository asignarHistoriaRepository,
             ProductBacklogRepository productBacklogRepository,
-            WorkspaceRepository workspaceRepository
+            WorkspaceRepository workspaceRepository,
+            EstadoTareaRepository estadoTareaRepository
     ) {
         return args -> {
             Faker faker = new Faker();
@@ -188,6 +189,86 @@ public class DatabaseLoader {
                 }
             }
 
+
+            // Poblar Roles
+            if (rolRepository.count() == 0) {
+                String[] roles = {"Scrum Master","Designer UX", "Developer", "QA Tester"};
+                for (String roleName : roles) {
+                    Rol rol = new Rol();
+                    rol.setNombre(roleName);
+                    rol.setDescripcion(faker.lorem().sentence());
+                    rol.setActivado(true);
+                    rol.setCreatedAt(LocalDateTime.now());
+                    rol.setUpdatedAt(LocalDateTime.now());
+                    rolRepository.save(rol);
+                }
+            }
+
+            // Poblar Miembros
+            if (miembroRepository.count() == 0) {
+                List<Usuario> usuarios = usuarioRepository.findAll();
+                List<Equipo> equipos = equipoRepository.findAll();
+                List<Rol> roles = rolRepository.findAll();
+                Random r = new Random();
+                int num;
+
+                for (Equipo equipo  : equipos) {
+                    num = r.nextInt(4)+2; // Número aleatorio de equipos en los que el usuario participará, minimo 2
+
+                    for (int i = 0; i < num; i++) {
+                        Usuario usuario = usuarios.get(faker.number().numberBetween(0, usuarios.size()));
+                        //la condicion es para asegurar solamente un scrum master por equipo
+                        Rol rol = i == 0 ? roles.get(0) : roles.get(faker.number().numberBetween(1, roles.size()));
+
+                        // Verifica si ya existe un miembro con la misma combinación de usuario y equipo
+                        if (!miembroRepository.existsByUsuarioAndEquipo(usuario, equipo)) {
+                            Miembro miembro = new Miembro();
+                            miembro.setUsuario(usuario);
+                            miembro.setEquipo(equipo);
+                            miembro.setRol(rol); // Se asigna un rol aleatorio
+                            miembro.setActivado(true);
+                            miembro.setCreatedAt(LocalDateTime.now());
+                            miembro.setUpdatedAt(LocalDateTime.now());
+                            miembroRepository.save(miembro);
+                        }
+                    }
+                }
+            }
+
+            // Poblar Sprints de proyectos de equipos
+            if (sprintRepository.count() == 0) {
+                List<Proyecto> proyectos = proyectoRepository.findAll();
+                for (Proyecto proyecto : proyectos) {
+                    int aux = new Random().nextInt(4);
+                    for (int i = 0; i < aux; i++) {
+                        Sprint sprint = new Sprint();
+                        sprint.setProyecto(proyecto);
+                        sprint.setNumeroSprint(i+1);
+                        sprint.setActivado(true);
+                        sprint.setUpdatedAt(LocalDateTime.now());
+                        sprint.setCreatedAt(LocalDateTime.now());
+                        sprintRepository.save(sprint);
+                    }                    
+                }
+            }
+
+            // Poblar SprintBacklogs
+            if (sprintBacklogRepository.count() == 0) {
+                List<Sprint> sprints = sprintRepository.findAll();
+                Random r = new Random();
+                int num;
+                for (Sprint sprint : sprints) {
+                    num = r.nextInt(3);
+                    for (int i = 0; i < num; i++) {
+                        SprintBacklog sprintBacklog = new SprintBacklog();
+                        sprintBacklog.setSprint(sprint);
+                        sprintBacklog.setActivado(true);
+                        sprintBacklog.setCreatedAt(LocalDateTime.now());
+                        sprintBacklog.setUpdatedAt(LocalDateTime.now());
+                        sprintBacklogRepository.save(sprintBacklog);
+                    }
+                }
+            }
             // Poblar Prioridades
             if (prioridadRepository.count() == 0) {
                 for (int i = 0; i < 4; i++) {
@@ -219,81 +300,151 @@ public class DatabaseLoader {
                 }
             }
 
-            // Poblar Tableros de proyectos
+            // // Poblar AsignarHistorias
+            if (asignarHistoriaRepository.count() == 0) {
+                List<SprintBacklog> spb = sprintBacklogRepository.findAll();
+                List<Historia> historias = historiaRepository.findAll();
+                for (int i = 0; i < 50; i++) {
+                    AsignarHistoria asignarHistoria = new AsignarHistoria();
+                    asignarHistoria.setSprintBacklog(spb.get(faker.number().numberBetween(0, spb.size())));
+                    asignarHistoria.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
+                    asignarHistoria.setActivado(true);
+                    asignarHistoria.setCreatedAt(LocalDateTime.now());
+                    asignarHistoria.setUpdatedAt(LocalDateTime.now());
+                    asignarHistoriaRepository.save(asignarHistoria);
+                }
+            }
+
+            
+
+            // poblamos los estados de las tareas
+            if(estadoTareaRepository.count() == 0){
+                EstadoTarea et1 = new EstadoTarea();
+                et1.setNombre("Pendiente");
+                EstadoTarea et2 = new EstadoTarea();
+                et2.setNombre("Trabajando");
+                EstadoTarea et3 = new EstadoTarea();
+                et3.setNombre("Terminado");
+                estadoTareaRepository.save(et1);
+                estadoTareaRepository.save(et2);
+                estadoTareaRepository.save(et3);
+            }
+
+
+
+            // Poblar Tableros de proyectos de los devs
             if (tableroRepository.count() == 0) {
                 List<Proyecto> proyectos = proyectoRepository.findAll();
+                List<EstadoTarea> ets = estadoTareaRepository.findAll();
+                List<Historia> historias = historiaRepository.findAll();
+                List<Equipo> equipo;
+                Random r = new Random();
+                Tablero tablero;
+                Tarjeta tarjeta;
+                Tarea tarea;
+                int num;
+                int num2;
                 for (Proyecto proyecto: proyectos) {
-                    for (int i = 0; i < 3; i++) {
-                        Tablero tablero = new Tablero();
-                        tablero.setTitulo(proyecto.getNombre()+" "+faker.lorem().word());
+                    num = r.nextInt(1)+1;// minimo 1 tablero
+                    for (int i = 0; i < num; i++) {
+                        tablero = new Tablero();
+                        tablero.setTitulo(faker.lorem().word());
                         tablero.setDescripcion(faker.lorem().sentence());
                         tablero.setProyecto(proyecto);
-                        tablero.setWorkspace(null);
                         tablero.setActivado(true);
                         tablero.setUpdatedAt(LocalDateTime.now());
                         tablero.setCreatedAt(LocalDateTime.now());
                         tableroRepository.save(tablero);
+
+                        for (int j = 0; j < 3; j++) {
+                            tarjeta = new Tarjeta();
+                            tarjeta.setTitulo(tarjetasArray[j]);
+                            tarjeta.setDescripcion(faker.lorem().paragraph());
+                            tarjeta.setTablero(tablero);
+                            tarjeta.setActivado(true);
+                            tarjeta.setCreatedAt(LocalDateTime.now());
+                            tarjeta.setUpdatedAt(LocalDateTime.now());
+                            tarjetaRepository.save(tarjeta);   
+                            
+                            num2 = r.nextInt(5)+3;
+                            equipo = equipoRepository.findEquiposByProyectoIdWithRoles(proyecto.getId());
+                            List<Usuario> integrantes = new ArrayList<>();
+                                for (Equipo eq : equipo) {
+                                    for (Miembro integrante : eq.getMiembros()) {
+                                        integrantes.add(integrante.getUsuario());
+                                    }
+                                }
+
+                            for (int k = 0; k < num2; k++) {
+                                tarea = new Tarea();
+                                tarea.setTitulo(tareasDevs[faker.number().numberBetween(0,tareasDevs.length)]);
+                                tarea.setDescripcion(faker.lorem().paragraph());
+                                tarea.setTarjeta(tarjeta);
+                                tarea.setActivado(true);
+                                tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
+                                tarea.setEstimacion(r.nextInt(5));
+                                tarea.setEstado(ets.get(faker.number().numberBetween(0, ets.size()))); 
+                                // Asignar un usuario aleatorio si hay disponibles
+                                if (!integrantes.isEmpty()) {
+                                    tarea.setUsuarioAsignado(integrantes.get(r.nextInt(integrantes.size())));
+                                }
+                                tarea.setCreatedAt(LocalDateTime.now());
+                                tarea.setUpdatedAt(LocalDateTime.now());
+                                tareaRepository.save(tarea);                      
+                            }
+                        }
+
                     }
                 }
             }
 
             
 
-            // Poblar Tarjetas de proyectos de equipos
-            if (tarjetaRepository.count() == 0) {
-                List<Tablero> tableros = tableroRepository.findAll();
-                for (Tablero tablero : tableros) {
-                    for (int i = 0; i < 3; i++) {
-                        Tarjeta tarjeta = new Tarjeta();
-                        tarjeta.setTitulo(tarjetasArray[i]);
-                        tarjeta.setDescripcion(faker.lorem().paragraph());
-                        tarjeta.setTablero(tablero);
-                        tarjeta.setActivado(true);
-                        tarjeta.setCreatedAt(LocalDateTime.now());
-                        tarjeta.setUpdatedAt(LocalDateTime.now());
-                        tarjetaRepository.save(tarjeta);
-                    }
-                }
-            }
+            // // Poblar Tarjetas de proyectos de equipos
+            // if (tarjetaRepository.count() == 0) {
+            //     List<Tablero> tableros = tableroRepository.findAll();
+            //     for (Tablero tablero : tableros) {
+            //         for (int i = 0; i < 3; i++) {
+            //             Tarjeta tarjeta = new Tarjeta();
+            //             tarjeta.setTitulo(tarjetasArray[i]);
+            //             tarjeta.setDescripcion(faker.lorem().paragraph());
+            //             tarjeta.setTablero(tablero);
+            //             tarjeta.setActivado(true);
+            //             tarjeta.setCreatedAt(LocalDateTime.now());
+            //             tarjeta.setUpdatedAt(LocalDateTime.now());
+            //             tarjetaRepository.save(tarjeta);
+            //         }
+            //     }
+            // }
 
-            // Poblar Sprints de proyectos de equipos
-            if (sprintRepository.count() == 0) {
-                List<Proyecto> proyectos = proyectoRepository.findAll();
-                for (Proyecto proyecto : proyectos) {
-                    int aux = new Random().nextInt(4);
-                    for (int i = 0; i < aux; i++) {
-                        Sprint sprint = new Sprint();
-                        sprint.setProyecto(proyecto);
-                        sprint.setNumeroSprint(i+1);
-                        sprint.setActivado(true);
-                        sprint.setUpdatedAt(LocalDateTime.now());
-                        sprint.setCreatedAt(LocalDateTime.now());
-                        sprintRepository.save(sprint);
-                    }                    
-                }
-            }
+            
 
-            // Poblar Tareas de proyectos de equipos
-            if (tareaRepository.count() == 0) {
-                List<Tarjeta> tarjetas = tarjetaRepository.findAll();
-                List<Historia> historias = historiaRepository.findAll();
-                Random r = new Random();
-                int num;
-                for (Tarjeta tarjeta : tarjetas) {
-                    num = r.nextInt(5);
-                    for (int i = 0; i < num; i++) {
-                        Tarea tarea = new Tarea();
-                        tarea.setTitulo(tareasDevs[faker.number().numberBetween(0,tareasDevs.length)]);
-                        tarea.setDescripcion(faker.lorem().paragraph());
-                        tarea.setTarjeta(tarjeta);
-                        tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
-                        tarea.setActivado(true);
-                        tarea.setCreatedAt(LocalDateTime.now());
-                        tarea.setUpdatedAt(LocalDateTime.now());
-                        tareaRepository.save(tarea);
-                    }
-                }
-            }
+            
+
+            // // Poblar Tareas de proyectos de equipos
+            // if (tareaRepository.count() == 0) {
+            //     List<Tarjeta> tarjetas = tarjetaRepository.findAll();
+            //     List<Historia> historias = historiaRepository.findAll();
+            //     List<EstadoTarea> ets = estadoTareaRepository.findAll();
+            //     Random r = new Random();
+            //     int num;
+            //     for (Tarjeta tarjeta : tarjetas) {
+            //         num = r.nextInt(5);
+            //         for (int i = 0; i < num; i++) {
+            //             Tarea tarea = new Tarea();
+            //             tarea.setTitulo(tareasDevs[faker.number().numberBetween(0,tareasDevs.length)]);
+            //             tarea.setDescripcion(faker.lorem().paragraph());
+            //             tarea.setTarjeta(tarjeta);
+            //             tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
+            //             tarea.setActivado(true);
+            //             tarea.setEstimacion(r.nextInt(5));
+            //             tarea.setEstado(ets.get(faker.number().numberBetween(0, ets.size()))); 
+            //             tarea.setCreatedAt(LocalDateTime.now());
+            //             tarea.setUpdatedAt(LocalDateTime.now());
+            //             tareaRepository.save(tarea);
+            //         }
+            //     }
+            // }
 
 
             // Poblar workspaces
@@ -312,6 +463,7 @@ public class DatabaseLoader {
             // Poblar Tableros de workspaces
             //if (tableroRepository.count() == 0) {
                 List<Workspace> workspaces = workspaceRepository.findAll();
+                List<EstadoTarea> ets = estadoTareaRepository.findAll();
                 Random r = new Random();
                 Tablero tablero;
                 Tarjeta tarjeta;
@@ -347,6 +499,7 @@ public class DatabaseLoader {
                                 tarea.setDescripcion(faker.lorem().paragraph());
                                 tarea.setTarjeta(tarjeta);
                                 tarea.setActivado(true);
+                                tarea.setEstado(ets.get(faker.number().numberBetween(0, ets.size()))); 
                                 tarea.setCreatedAt(LocalDateTime.now());
                                 tarea.setUpdatedAt(LocalDateTime.now());
                                 tareaRepository.save(tarea);                      
@@ -357,84 +510,9 @@ public class DatabaseLoader {
                 }
             }
 
-            // Poblar SprintBacklogs
-            if (sprintBacklogRepository.count() == 0) {
-                List<Sprint> sprints = sprintRepository.findAll();
-                Random r = new Random();
-                int num;
-                for (Sprint sprint : sprints) {
-                    num = r.nextInt(3);
-                    for (int i = 0; i < num; i++) {
-                        SprintBacklog sprintBacklog = new SprintBacklog();
-                        sprintBacklog.setSprint(sprint);
-                        sprintBacklog.setActivado(true);
-                        sprintBacklog.setCreatedAt(LocalDateTime.now());
-                        sprintBacklog.setUpdatedAt(LocalDateTime.now());
-                        sprintBacklogRepository.save(sprintBacklog);
-                    }
-                }
-            }
+            
 
-            // Poblar Roles
-            if (rolRepository.count() == 0) {
-                String[] roles = {"Scrum Master","Designer UX", "Developer", "QA Tester"};
-                for (String roleName : roles) {
-                    Rol rol = new Rol();
-                    rol.setNombre(roleName);
-                    rol.setDescripcion(faker.lorem().sentence());
-                    rol.setActivado(true);
-                    rol.setCreatedAt(LocalDateTime.now());
-                    rol.setUpdatedAt(LocalDateTime.now());
-                    rolRepository.save(rol);
-                }
-            }
-
-            // Poblar Miembros
-            if (miembroRepository.count() == 0) {
-                List<Usuario> usuarios = usuarioRepository.findAll();
-                List<Equipo> equipos = equipoRepository.findAll();
-                List<Rol> roles = rolRepository.findAll();
-                Random r = new Random();
-                int num;
-
-                for (Equipo equipo  : equipos) {
-                    num = r.nextInt(5); // Número aleatorio de equipos en los que el usuario participará
-
-                    for (int i = 0; i < num + 1; i++) {
-                        Usuario usuario = usuarios.get(faker.number().numberBetween(0, usuarios.size()));
-                        //la condicion es para asegurar solamente un scrum master por equipo
-                        Rol rol = i == 0 ? roles.get(0) : roles.get(faker.number().numberBetween(1, roles.size()));
-
-                        // Verifica si ya existe un miembro con la misma combinación de usuario y equipo
-                        if (!miembroRepository.existsByUsuarioAndEquipo(usuario, equipo)) {
-                            Miembro miembro = new Miembro();
-                            miembro.setUsuario(usuario);
-                            miembro.setEquipo(equipo);
-                            miembro.setRol(rol); // Se asigna un rol aleatorio
-                            miembro.setActivado(true);
-                            miembro.setCreatedAt(LocalDateTime.now());
-                            miembro.setUpdatedAt(LocalDateTime.now());
-                            miembroRepository.save(miembro);
-                        }
-                    }
-                }
-            }
-
-
-            // // Poblar AsignarHistorias
-            if (asignarHistoriaRepository.count() == 0) {
-                List<SprintBacklog> spb = sprintBacklogRepository.findAll();
-                List<Historia> historias = historiaRepository.findAll();
-                for (int i = 0; i < 50; i++) {
-                    AsignarHistoria asignarHistoria = new AsignarHistoria();
-                    asignarHistoria.setSprintBacklog(spb.get(faker.number().numberBetween(0, spb.size())));
-                    asignarHistoria.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
-                    asignarHistoria.setActivado(true);
-                    asignarHistoria.setCreatedAt(LocalDateTime.now());
-                    asignarHistoria.setUpdatedAt(LocalDateTime.now());
-                    asignarHistoriaRepository.save(asignarHistoria);
-                }
-            }
+            
 
             
         };
