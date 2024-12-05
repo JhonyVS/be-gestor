@@ -34,6 +34,9 @@ public class TareaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    public TareaService() {
+    }
+
     public List<TareaDTO> getAllTareas() {
         return tareaRepository.findAll().stream()
                 .map(DTOConverter::convertToDTO)
@@ -114,6 +117,8 @@ public class TareaService {
         }
         tareaRepository.delete(tarea);
     }
+
+    
 
     
 }

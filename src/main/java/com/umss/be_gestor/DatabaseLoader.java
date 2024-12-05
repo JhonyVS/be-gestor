@@ -344,6 +344,7 @@ public class DatabaseLoader {
                 Tarea tarea;
                 int num;
                 int num2;
+                int aux;
                 for (Proyecto proyecto: proyectos) {
                     num = r.nextInt(1)+1;// minimo 1 tablero
                     for (int i = 0; i < num; i++) {
@@ -366,7 +367,7 @@ public class DatabaseLoader {
                             tarjeta.setUpdatedAt(LocalDateTime.now());
                             tarjetaRepository.save(tarjeta);   
                             
-                            num2 = r.nextInt(5)+3;
+                            num2 = r.nextInt(10)+5;
                             equipo = equipoRepository.findEquiposByProyectoIdWithRoles(proyecto.getId());
                             List<Usuario> integrantes = new ArrayList<>();
                                 for (Equipo eq : equipo) {
@@ -382,8 +383,9 @@ public class DatabaseLoader {
                                 tarea.setTarjeta(tarjeta);
                                 tarea.setActivado(true);
                                 tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
-                                tarea.setEstimacion(r.nextInt(5));
-                                tarea.setEstado(ets.get(faker.number().numberBetween(0, ets.size()))); 
+                                tarea.setEstimacion(r.nextInt(5)+2);
+                                aux = faker.number().numberBetween(0, 5);
+                                tarea.setEstado(ets.get( aux == 0 ? 0 : aux == 1 ? 1:2 )); // de esta forma aseguraremos mas tareas terminadas.
                                 // Asignar un usuario aleatorio si hay disponibles
                                 if (!integrantes.isEmpty()) {
                                     tarea.setUsuarioAsignado(integrantes.get(r.nextInt(integrantes.size())));

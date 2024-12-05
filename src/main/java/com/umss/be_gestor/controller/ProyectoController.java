@@ -5,12 +5,14 @@ import org.springframework.web.bind.annotation.*;
 
 import com.umss.be_gestor.dto.EquipoDTO;
 import com.umss.be_gestor.dto.ProyectoDTO;
+import com.umss.be_gestor.dto.TareaDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.service.EquipoService;
 import com.umss.be_gestor.service.ProyectoService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -19,7 +21,10 @@ public class ProyectoController {
 
     @Autowired
     private ProyectoService proyectoService;
+    
+    @Autowired
     private EquipoService equipoService;
+    
 
     @Autowired
     public ProyectoController(EquipoService equipoService) {
@@ -66,11 +71,6 @@ public class ProyectoController {
         List<ProyectoDTO> proyectos = proyectoService.getProyectosByProjectManager(projectManagerId);
         return ResponseEntity.ok(proyectos);
     }
-    //  @GetMapping("/{projectId}/equipos")
-    //  public ResponseEntity<List<EquipoDTO>> getEquiposConIntegrantes(@PathVariable UUID projectId) {
-    //      List<EquipoDTO> equipos = equipoService.getEquiposConIntegrantesPorProyecto(projectId);
-    //      return ResponseEntity.ok(equipos);
-    //  }
 
     @GetMapping("/{projectId}/equipos")
     public ResponseEntity<List<EquipoDTO>> getEquiposByProyecto(@PathVariable UUID projectId) {
@@ -85,6 +85,18 @@ public class ProyectoController {
         return ResponseEntity.ok(proyectos);
     }
      
+
+    @GetMapping("/{proyectoId}/tareas/estadisticas")
+    public ResponseEntity<Map<String, Long>> countTareasByEstado(@PathVariable UUID proyectoId) {
+        Map<String, Long> estadisticas = proyectoService.countTareasByEstado(proyectoId);
+        return ResponseEntity.ok(estadisticas);
+    }
+
+    @GetMapping("/{proyectoId}/tareas")
+    public ResponseEntity<List<TareaDTO>> getTareasByProyecto(@PathVariable UUID proyectoId) {
+        List<TareaDTO> tareas = proyectoService.getTareasByProyecto(proyectoId);
+        return ResponseEntity.ok(tareas);
+    }
 
 
 }

@@ -4,14 +4,17 @@ import org.springframework.stereotype.Service;
 
 import com.umss.be_gestor.dto.EquipoDTO;
 import com.umss.be_gestor.dto.ProyectoDTO;
+import com.umss.be_gestor.dto.TareaDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.model.Miembro;
 import com.umss.be_gestor.model.Proyecto;
+import com.umss.be_gestor.model.Tarea;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
+import com.umss.be_gestor.repository.TareaRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
 import com.umss.be_gestor.util.DTOConverter;
 
@@ -32,6 +35,9 @@ public class ProyectoService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private TareaRepository tareaRepository;
 
 
 
@@ -198,4 +204,34 @@ public class ProyectoService {
             return proyectoDTO;
         }).collect(Collectors.toList());
     }
+
+    public Map<String, Long> countTareasByEstado(UUID proyectoId) {
+        List<Tarea> tareas = tareaRepository.findAllByProyectoId(proyectoId);
+    
+        // Contar tareas por estado
+        Map<String, Long> contador = tareas.stream()
+                .collect(Collectors.groupingBy(
+                        tarea -> tarea.getEstado().getNombre(),
+                        Collectors.counting()
+                ));
+    
+        // Asegurar que los estados faltantes estén presentes con valor 0
+        List<String> estados = List.of("Pendiente", "Trabajando", "Terminado");
+        for (String estado : estados) {
+            contador.putIfAbsent(estado, 0L);
+        }
+    
+        return contador;
+    }
+    
+
+    public List<TareaDTO> getTareasByProyecto(UUID proyectoId) {
+        List<Tarea> tareas = tareaRepository.findAllByProyectoId(proyectoId);
+
+        // Convertir tareas a DTO
+        return tareas.stream()
+                .map(DTOConverter::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
 }

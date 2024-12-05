@@ -20,4 +20,7 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, UUID> {
     """)
     List<Proyecto> findAllByProjectManagerId(@Param("projectManagerId") UUID projectManagerId);
 
+    
+
+
 }
