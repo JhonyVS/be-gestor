@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.umss.be_gestor.dto.TableroDTO;
 import com.umss.be_gestor.dto.WorkspaceDTO;
 import com.umss.be_gestor.dto.WorkspaceResponseDTO;
 import com.umss.be_gestor.model.Workspace;
@@ -62,6 +63,11 @@ public class WorkspaceController {
         return ResponseEntity.ok(workspaceResponseDTO);
     }
 
+    @GetMapping("/{workspaceId}/tableros")
+    public ResponseEntity<List<TableroDTO>> getTablerosByWorkspace(@PathVariable UUID workspaceId) {
+        List<TableroDTO> tableros = workspaceService.getTablerosByWorkspaceId(workspaceId);
+        return ResponseEntity.ok(tableros);
+    }
 
 
 }

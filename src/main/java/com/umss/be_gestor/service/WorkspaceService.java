@@ -28,6 +28,14 @@ public class WorkspaceService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    public WorkspaceService() {
+    }
+
+    public WorkspaceService(WorkspaceRepository workspaceRepository, UsuarioRepository usuarioRepository) {
+        this.workspaceRepository = workspaceRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
+
     public List<WorkspaceDTO> getAllWorkspaces() {
         return workspaceRepository.findAll().stream()
                 .map(DTOConverter::convertToWorkspaceDTO)  // Utilizando el método estático del DTOConverter
@@ -126,7 +134,22 @@ public class WorkspaceService {
     
         return workspaceResponseDTO;
     }
+
+    public List<TableroDTO> getTablerosByWorkspaceId(UUID workspaceId) {
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new NotFoundException("Workspace no encontrado", null));
+
+        return workspace.getTableros().stream()
+                .map(DTOConverter::convertirTableroADTO)
+                .collect(Collectors.toList());
+    }
     
+    public WorkspaceDTO getWorkspaceByUserId(UUID userId) {
+        Workspace workspace = workspaceRepository.findByProjectManager_Id(userId)
+                .orElseThrow(() -> new NotFoundException("Workspace no encontrado para el usuario", null));
+
+        return DTOConverter.convertirWorkspaceADTO(workspace);
+    }
     
     
 }

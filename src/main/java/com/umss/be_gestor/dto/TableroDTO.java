@@ -13,6 +13,10 @@ public class TableroDTO {
     private Boolean activado;
     private List<TarjetaDTO> tarjetas; // Agregar la lista de tarjetas
 
+    public TableroDTO() {
+    }
+
+
     // Getters y setters
     public UUID getId() {
         return id;

@@ -8,8 +8,10 @@ import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
 import com.umss.be_gestor.repository.HistoriaRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
+import com.umss.be_gestor.repository.TableroRepository;
 import com.umss.be_gestor.repository.TarjetaRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.WorkspaceRepository;
 
 import java.util.stream.Collectors;
 
@@ -44,6 +46,69 @@ public class DTOConverter {
         }
     
         return tableroDTO;
+    }
+
+
+    public static TableroDTO convertToDTO(Tablero tablero) {
+        TableroDTO tableroDTO = new TableroDTO();
+        tableroDTO.setId(tablero.getId());
+        tableroDTO.setProyectoId(tablero.getProyecto() != null ? tablero.getProyecto().getId() : null);
+        tableroDTO.setWorkspaceId(tablero.getWorkspace().getId() != null ? tablero.getWorkspace().getId() : null);
+        tableroDTO.setTitulo(tablero.getTitulo());
+        tableroDTO.setDescripcion(tablero.getDescripcion());
+        tableroDTO.setActivado(tablero.getActivado());
+        return tableroDTO;
+    }
+
+    public static Tablero convertToEntity(TableroDTO tableroDTO, ProyectoRepository proyectoRepository, WorkspaceRepository workspaceRepository) {
+        Tablero tablero = new Tablero();
+
+        if (tableroDTO.getProyectoId() != null) {
+            Proyecto proyecto = proyectoRepository.findById(tableroDTO.getProyectoId()).orElse(null);
+            if (proyecto == null) {
+                throw new NotFoundException("Proyecto", tableroDTO.getProyectoId().toString());
+            }
+            tablero.setProyecto(proyecto);
+        }
+
+        if (tableroDTO.getWorkspaceId() != null) {
+            Workspace workspace = workspaceRepository.findById(tableroDTO.getWorkspaceId()).orElse(null);
+            if (workspace == null) {
+                throw new NotFoundException("Workspace", tableroDTO.getWorkspaceId().toString());
+            }
+            tablero.setWorkspace(workspace);
+        }
+
+        tablero.setTitulo(tableroDTO.getTitulo());
+        tablero.setDescripcion(tableroDTO.getDescripcion());
+        tablero.setActivado(tableroDTO.getActivado());
+        return tablero;
+    }
+
+    public static TarjetaDTO convertToDTO(Tarjeta tarjeta) {
+        TarjetaDTO tarjetaDTO = new TarjetaDTO();
+        tarjetaDTO.setId(tarjeta.getId());
+        tarjetaDTO.setTitulo(tarjeta.getTitulo());
+        tarjetaDTO.setDescripcion(tarjeta.getDescripcion());
+        tarjetaDTO.setTableroId(tarjeta.getTablero().getId());
+        tarjetaDTO.setActivado(tarjeta.getActivado());
+        return tarjetaDTO;
+    }
+
+
+    public static Tarjeta convertToEntity(TarjetaDTO tarjetaDTO, TableroRepository tableroRepository) {
+        Tarjeta tarjeta = new Tarjeta();
+        tarjeta.setTitulo(tarjetaDTO.getTitulo());
+        tarjeta.setDescripcion(tarjetaDTO.getDescripcion());
+
+        Tablero tablero = tableroRepository.findById(tarjetaDTO.getTableroId()).orElse(null);
+        if (tablero == null) {
+            throw new NotFoundException("Tablero", tarjetaDTO.getTableroId().toString());
+        }
+        tarjeta.setTablero(tablero);
+
+        tarjeta.setActivado(tarjetaDTO.getActivado());
+        return tarjeta;
     }
     
 
@@ -129,30 +194,20 @@ public class DTOConverter {
     
         return equipoDTO;
     }
-    
-    
-    
-    
 
-    // public static EquipoDTO convertToEquipoDTO(Equipo equipo) {
-    //     EquipoDTO equipoDTO = new EquipoDTO();
-    //     equipoDTO.setId(equipo.getId());
-    //     equipoDTO.setNombre(equipo.getNombre());
-    //     equipoDTO.setProyectoId(equipo.getProyecto() != null ? equipo.getProyecto().getId() : null);
-    //     equipoDTO.setActivado(equipo.getActivado());
-    
-    //     equipoDTO.setIntegrantes(
-    //         equipo.getIntegrantes().stream()
-    //             .map(miembro -> DTOConverter.convertToUsuarioDTO(miembro.getUsuario()))
-    //             .collect(Collectors.toList())
-    //     );
-    
-    //     return equipoDTO;
-    // }
-    
-    
-    
-    
+    public static TableroDTO convertirTableroADTO(Tablero tablero) {
+        TableroDTO tableroDTO = new TableroDTO();
+        tableroDTO.setId(tablero.getId());
+        if(tablero.getProyecto() != null)
+            tableroDTO.setProyectoId(tablero.getProyecto().getId());
+        if(tablero.getWorkspace() != null)
+            tableroDTO.setWorkspaceId(tablero.getWorkspace().getId());
+        tableroDTO.setTitulo(tablero.getTitulo());
+        tableroDTO.setDescripcion(tablero.getDescripcion());
+        tableroDTO.setActivado(tablero.getActivado());
+
+        return tableroDTO;
+    }    
     
     
     
@@ -254,20 +309,6 @@ public class DTOConverter {
         );
     }
 
-    /** PENDIENTE POR REVISAR */
-    // public static UsuarioBasicoDTO convertirAUsuarioBasicDTO(Usuario usuario, UsuarioRepository usuarioRepository) {
-    //     Usuario us = usuarioRepository.findById(usuario.getId()).orElse(null);
-    //     if (us == null) {
-    //         throw new NotFoundException("Usuario", usuario.getId().toString());
-    //     }
-    //     UsuarioBasicoDTO usuarioBasicoDTO = new UsuarioBasicoDTO();
-    //     usuarioBasicoDTO.setNombres(us.getNombres());
-    //     usuarioBasicoDTO.setApellidos(us.getApellidos());
-    //     usuarioBasicoDTO.setEmail(us.getEmail());
-    //     usuarioBasicoDTO.setId(us.getId());
-
-    //     return usuarioBasicoDTO;
-    // }
     
     public static TareaDTO convertToDTO(Tarea tarea) {
         TareaDTO tareaDTO = new TareaDTO();
@@ -311,8 +352,13 @@ public class DTOConverter {
     
     
     
-
-    
+    public static WorkspaceDTO convertirWorkspaceADTO(Workspace workspace) {
+        return new WorkspaceDTO(
+            workspace.getId(),
+            workspace.getProjectManager().getId(),
+            workspace.getActivado()
+        );
+    }
     
 
 

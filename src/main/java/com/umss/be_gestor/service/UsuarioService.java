@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 
 import com.umss.be_gestor.dto.UsuarioBasicoDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
+import com.umss.be_gestor.dto.WorkspaceDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Usuario;
+import com.umss.be_gestor.model.Workspace;
 import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.WorkspaceRepository;
 import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
@@ -22,6 +25,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private WorkspaceRepository workspaceRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -171,4 +177,11 @@ public class UsuarioService {
         return DTOConverter.convertirAUsuarioBasicoDTO(usuario); 
     }
     
+    public WorkspaceDTO getWorkspaceByUserId(UUID userId) {
+        Workspace workspace = workspaceRepository.findByProjectManager_Id(userId)
+                .orElseThrow(() -> new NotFoundException("Workspace no encontrado para el usuario", null));
+
+        return DTOConverter.convertirWorkspaceADTO(workspace);
+    }
+
 }

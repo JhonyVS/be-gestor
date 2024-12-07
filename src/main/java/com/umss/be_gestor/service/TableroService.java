@@ -3,6 +3,7 @@ package com.umss.be_gestor.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.umss.be_gestor.dto.TableroDTO;
+import com.umss.be_gestor.dto.TarjetaDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Tablero;
 import com.umss.be_gestor.model.Proyecto;
@@ -10,6 +11,7 @@ import com.umss.be_gestor.model.Workspace;
 import com.umss.be_gestor.repository.TableroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
 import com.umss.be_gestor.repository.WorkspaceRepository;
+import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +32,7 @@ public class TableroService {
 
     public List<TableroDTO> getAllTableros() {
         return tableroRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(DTOConverter::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -43,16 +45,16 @@ public class TableroService {
         if (tablero == null) {
             throw new NotFoundException("Tablero", id.toString());
         }
-        return convertToDTO(tablero);
+        return DTOConverter.convertToDTO(tablero);
     }
 
     public TableroDTO createTablero(TableroDTO tableroDTO) {
-        Tablero tablero = convertToEntity(tableroDTO);
+        Tablero tablero = DTOConverter.convertToEntity(tableroDTO,proyectoRepository,workspaceRepository);
         tablero.setCreatedAt(LocalDateTime.now());
         tablero.setUpdatedAt(LocalDateTime.now());
         tablero.setActivado(true);
         tablero = tableroRepository.save(tablero);
-        return convertToDTO(tablero);
+        return DTOConverter.convertToDTO(tablero);
     }
 
     public TableroDTO updateTablero(UUID id, TableroDTO tableroDTO) {
@@ -91,7 +93,7 @@ public class TableroService {
 
         tablero.setUpdatedAt(LocalDateTime.now());
         tablero = tableroRepository.save(tablero);
-        return convertToDTO(tablero);
+        return DTOConverter.convertToDTO(tablero);
     }
 
     public void deleteTablero(UUID id) {
@@ -102,39 +104,17 @@ public class TableroService {
         tableroRepository.delete(tablero);
     }
 
-    private TableroDTO convertToDTO(Tablero tablero) {
-        TableroDTO tableroDTO = new TableroDTO();
-        tableroDTO.setId(tablero.getId());
-        tableroDTO.setProyectoId(tablero.getProyecto() != null ? tablero.getProyecto().getId() : null);
-        tableroDTO.setWorkspaceId(tablero.getWorkspace().getId() != null ? tablero.getWorkspace().getId() : null);
-        tableroDTO.setTitulo(tablero.getTitulo());
-        tableroDTO.setDescripcion(tablero.getDescripcion());
-        tableroDTO.setActivado(tablero.getActivado());
-        return tableroDTO;
+    
+
+    public List<TarjetaDTO> getTarjetasByTableroId(UUID tableroId) {
+        Tablero tablero = tableroRepository.findById(tableroId)
+            .orElseThrow(() -> new NotFoundException("Tablero no encontrado", null));
+
+        return tablero.getTarjetas().stream()
+            .map(DTOConverter::convertToDTO)
+            .collect(Collectors.toList());
     }
 
-    private Tablero convertToEntity(TableroDTO tableroDTO) {
-        Tablero tablero = new Tablero();
 
-        if (tableroDTO.getProyectoId() != null) {
-            Proyecto proyecto = proyectoRepository.findById(tableroDTO.getProyectoId()).orElse(null);
-            if (proyecto == null) {
-                throw new NotFoundException("Proyecto", tableroDTO.getProyectoId().toString());
-            }
-            tablero.setProyecto(proyecto);
-        }
 
-        if (tableroDTO.getWorkspaceId() != null) {
-            Workspace workspace = workspaceRepository.findById(tableroDTO.getWorkspaceId()).orElse(null);
-            if (workspace == null) {
-                throw new NotFoundException("Workspace", tableroDTO.getWorkspaceId().toString());
-            }
-            tablero.setWorkspace(workspace);
-        }
-
-        tablero.setTitulo(tableroDTO.getTitulo());
-        tablero.setDescripcion(tableroDTO.getDescripcion());
-        tablero.setActivado(tableroDTO.getActivado());
-        return tablero;
-    }
 }

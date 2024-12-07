@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.umss.be_gestor.dto.TableroDTO;
+import com.umss.be_gestor.dto.TarjetaDTO;
 import com.umss.be_gestor.model.Tablero;
 import com.umss.be_gestor.service.TableroService;
 
@@ -47,5 +48,12 @@ public class TableroController {
     public ResponseEntity<Void> deleteTablero(@PathVariable UUID id) {
         tableroService.deleteTablero(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/{tableroId}/tarjetas")
+    public ResponseEntity<List<TarjetaDTO>> getTarjetasByTableroId(@PathVariable UUID tableroId) {
+        List<TarjetaDTO> tarjetas = tableroService.getTarjetasByTableroId(tableroId);
+        return ResponseEntity.ok(tarjetas);
     }
 }

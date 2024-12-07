@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.umss.be_gestor.dto.TareaDTO;
 import com.umss.be_gestor.dto.TarjetaDTO;
 import com.umss.be_gestor.model.Tarjeta;
 import com.umss.be_gestor.service.TarjetaService;
@@ -47,5 +48,11 @@ public class TarjetaController {
     public ResponseEntity<Void> deleteTarjeta(@PathVariable UUID id) {
         tarjetaService.deleteTarjeta(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{tarjetaId}/tareas")
+    public ResponseEntity<List<TareaDTO>> getTareasByTarjetaId(@PathVariable UUID tarjetaId) {
+        List<TareaDTO> tareas = tarjetaService.getTareasByTarjetaId(tarjetaId);
+        return ResponseEntity.ok(tareas);
     }
 }

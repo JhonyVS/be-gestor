@@ -2,11 +2,14 @@ package com.umss.be_gestor.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.umss.be_gestor.dto.TareaDTO;
 import com.umss.be_gestor.dto.TarjetaDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Tarjeta;
 import com.umss.be_gestor.model.Tablero;
 import com.umss.be_gestor.repository.TarjetaRepository;
+import com.umss.be_gestor.util.DTOConverter;
 import com.umss.be_gestor.repository.TableroRepository;
 
 import java.time.LocalDateTime;
@@ -25,7 +28,7 @@ public class TarjetaService {
 
     public List<TarjetaDTO> getAllTarjetas() {
         return tarjetaRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(DTOConverter::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -38,16 +41,16 @@ public class TarjetaService {
         if (tarjeta == null) {
             throw new NotFoundException("Tarjeta", id.toString());
         }
-        return convertToDTO(tarjeta);
+        return DTOConverter.convertToDTO(tarjeta);
     }
 
     public TarjetaDTO createTarjeta(TarjetaDTO tarjetaDTO) {
-        Tarjeta tarjeta = convertToEntity(tarjetaDTO);
+        Tarjeta tarjeta = DTOConverter.convertToEntity(tarjetaDTO,tableroRepository);
         tarjeta.setCreatedAt(LocalDateTime.now());
         tarjeta.setUpdatedAt(LocalDateTime.now());
         tarjeta.setActivado(true); // Inicializar activado como true
         tarjeta = tarjetaRepository.save(tarjeta);
-        return convertToDTO(tarjeta);
+        return DTOConverter.convertToDTO(tarjeta);
     }
 
     public TarjetaDTO updateTarjeta(UUID id, TarjetaDTO tarjetaDTO) {
@@ -76,7 +79,7 @@ public class TarjetaService {
 
         tarjeta.setUpdatedAt(LocalDateTime.now());
         tarjeta = tarjetaRepository.save(tarjeta);
-        return convertToDTO(tarjeta);
+        return DTOConverter.convertToDTO(tarjeta);
     }
 
     public void deleteTarjeta(UUID id) {
@@ -87,28 +90,15 @@ public class TarjetaService {
         tarjetaRepository.delete(tarjeta);
     }
 
-    private TarjetaDTO convertToDTO(Tarjeta tarjeta) {
-        TarjetaDTO tarjetaDTO = new TarjetaDTO();
-        tarjetaDTO.setId(tarjeta.getId());
-        tarjetaDTO.setTitulo(tarjeta.getTitulo());
-        tarjetaDTO.setDescripcion(tarjeta.getDescripcion());
-        tarjetaDTO.setTableroId(tarjeta.getTablero().getId());
-        tarjetaDTO.setActivado(tarjeta.getActivado());
-        return tarjetaDTO;
+    public List<TareaDTO> getTareasByTarjetaId(UUID tarjetaId) {
+        Tarjeta tarjeta = tarjetaRepository.findById(tarjetaId)
+            .orElseThrow(() -> new NotFoundException("Tarjeta no encontrada", null));
+
+        return tarjeta.getTareas().stream()
+            .map(DTOConverter::convertToDTO)
+            .collect(Collectors.toList());
     }
 
-    private Tarjeta convertToEntity(TarjetaDTO tarjetaDTO) {
-        Tarjeta tarjeta = new Tarjeta();
-        tarjeta.setTitulo(tarjetaDTO.getTitulo());
-        tarjeta.setDescripcion(tarjetaDTO.getDescripcion());
 
-        Tablero tablero = tableroRepository.findById(tarjetaDTO.getTableroId()).orElse(null);
-        if (tablero == null) {
-            throw new NotFoundException("Tablero", tarjetaDTO.getTableroId().toString());
-        }
-        tarjeta.setTablero(tablero);
 
-        tarjeta.setActivado(tarjetaDTO.getActivado());
-        return tarjeta;
-    }
 }

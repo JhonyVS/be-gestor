@@ -7,9 +7,11 @@ import org.springframework.security.core.Authentication;
 
 import com.umss.be_gestor.dto.UsuarioBasicoDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
+import com.umss.be_gestor.dto.WorkspaceDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.service.UsuarioService;
+import com.umss.be_gestor.service.WorkspaceService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private WorkspaceService workspaceService;
 
     @GetMapping("/all")
     public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
@@ -80,5 +85,12 @@ public class UsuarioController {
         UsuarioBasicoDTO usuarioBasicDTO = usuarioService.obtenerUsuarioPorId(id);
         return ResponseEntity.ok(usuarioBasicDTO);
     }
+
+    @GetMapping("/workspaces/{userId}")
+    public ResponseEntity<WorkspaceDTO> getWorkspaceByUserId(@PathVariable UUID userId) {
+        WorkspaceDTO workspace = workspaceService.getWorkspaceByUserId(userId);
+        return ResponseEntity.ok(workspace);
+    }
+
 
 }

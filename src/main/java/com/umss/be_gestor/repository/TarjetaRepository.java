@@ -15,4 +15,6 @@ public interface TarjetaRepository extends JpaRepository<Tarjeta, UUID> {
 
     // Método para encontrar tarjetas que pertenecen a tableros
     List<Tarjeta> findByTableroIdIsNotNull();
+
+    List<Tarjeta> findByTableroId(UUID tableroId);
 }

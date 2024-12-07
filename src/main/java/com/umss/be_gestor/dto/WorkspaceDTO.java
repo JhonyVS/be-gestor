@@ -8,6 +8,13 @@ public class WorkspaceDTO {
     private UUID projectManagerId;
     private Boolean activado;
 
+
+    public WorkspaceDTO(UUID id, UUID projectManagerId, Boolean activado) {
+        this.id = id;
+        this.projectManagerId = projectManagerId;
+        this.activado = activado;
+    }
+
     public WorkspaceDTO() {
     }
 
