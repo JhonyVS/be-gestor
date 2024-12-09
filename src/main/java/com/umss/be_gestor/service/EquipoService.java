@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.umss.be_gestor.dto.EquipoDTO;
 import com.umss.be_gestor.dto.UsuarioBasicoDTO;
-import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.model.Miembro;

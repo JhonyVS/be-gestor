@@ -6,7 +6,6 @@ import com.umss.be_gestor.dto.EquipoDTO;
 import com.umss.be_gestor.dto.ProyectoDTO;
 import com.umss.be_gestor.dto.TareaDTO;
 import com.umss.be_gestor.dto.UsuarioBasicoDTO;
-import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.model.Miembro;
