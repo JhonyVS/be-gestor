@@ -184,4 +184,11 @@ public class UsuarioService {
         return DTOConverter.convertirWorkspaceADTO(workspace);
     }
 
+    public UsuarioBasicoDTO getUsuarioBasicoPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuario con email " + email + " no encontrado", email));
+        
+        return DTOConverter.convertirAUsuarioBasicoDTO(usuario);
+    }
+
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.umss.be_gestor.dto.EquipoDTO;
 import com.umss.be_gestor.dto.ProyectoDTO;
 import com.umss.be_gestor.dto.TareaDTO;
+import com.umss.be_gestor.dto.UsuarioBasicoDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Equipo;
@@ -192,9 +193,9 @@ public class ProyectoService {
                 EquipoDTO equipoDTO = DTOConverter.convertToEquipoDTO(equipo);
 
                 // Agrega los integrantes del equipo
-                List<UsuarioDTO> integrantes = miembros.stream()
+                List<UsuarioBasicoDTO> integrantes = miembros.stream()
                         .filter(miembro -> miembro.getEquipo().getId().equals(equipo.getId()))
-                        .map(miembro -> DTOConverter.convertToUsuarioDTO(miembro.getUsuario()))
+                        .map(miembro -> DTOConverter.convertirAUsuarioBasicoDTO(miembro.getUsuario()))
                         .collect(Collectors.toList());
 
                 equipoDTO.setIntegrantes(integrantes);

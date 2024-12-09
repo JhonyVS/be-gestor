@@ -3,13 +3,19 @@ package com.umss.be_gestor.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.umss.be_gestor.dto.EquipoDTO;
+import com.umss.be_gestor.dto.UsuarioBasicoDTO;
 import com.umss.be_gestor.dto.UsuarioDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Equipo;
+import com.umss.be_gestor.model.Miembro;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.EquipoRepository;
+import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
+import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.util.DTOConverter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +30,13 @@ public class EquipoService {
     @Autowired
     private ProyectoRepository proyectoRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    
+    @Autowired
+    private MiembroRepository miembroRepository;
+
+
 
 
     @Autowired
@@ -34,7 +47,7 @@ public class EquipoService {
 
     public List<EquipoDTO> getAllEquipos() {
         return equipoRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(DTOConverter::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -47,16 +60,16 @@ public class EquipoService {
         if (equipo == null) {
             throw new NotFoundException("Equipo", id.toString());
         }
-        return convertToDTO(equipo);
+        return DTOConverter.convertToDTO(equipo);
     }
 
     public EquipoDTO createEquipo(EquipoDTO equipoDTO) {
-        Equipo equipo = convertToEntity(equipoDTO);
+        Equipo equipo = DTOConverter.convertToEntity(equipoDTO,proyectoRepository,usuarioRepository);
         equipo.setCreatedAt(LocalDateTime.now());
         equipo.setUpdatedAt(LocalDateTime.now());
         equipo.setActivado(true); // Inicializar activado como true
         equipo = equipoRepository.save(equipo);
-        return convertToDTO(equipo);
+        return DTOConverter.convertToDTO(equipo);
     }
 
     public EquipoDTO updateEquipo(UUID id, EquipoDTO equipoDTO) {
@@ -82,7 +95,7 @@ public class EquipoService {
 
         equipo.setUpdatedAt(LocalDateTime.now());
         equipo = equipoRepository.save(equipo);
-        return convertToDTO(equipo);
+        return DTOConverter.convertToDTO(equipo);
     }
 
     public void deleteEquipo(UUID id) {
@@ -93,26 +106,7 @@ public class EquipoService {
         equipoRepository.delete(equipo);
     }
 
-    private EquipoDTO convertToDTO(Equipo equipo) {
-        EquipoDTO equipoDTO = new EquipoDTO();
-        equipoDTO.setId(equipo.getId());
-        equipoDTO.setNombre(equipo.getNombre());
-        equipoDTO.setProyectoId(equipo.getProyecto().getId());
-        equipoDTO.setActivado(equipo.getActivado());
-        return equipoDTO;
-    }
-
-    private Equipo convertToEntity(EquipoDTO equipoDTO) {
-        Equipo equipo = new Equipo();
-        equipo.setNombre(equipoDTO.getNombre());
-        Proyecto proyecto = proyectoRepository.findById(equipoDTO.getProyectoId()).orElse(null);
-        if (proyecto == null) {
-            throw new NotFoundException("Proyecto", equipoDTO.getProyectoId().toString());
-        }
-        equipo.setProyecto(proyecto);
-        equipo.setActivado(equipoDTO.getActivado());
-        return equipo;
-    }
+    
 
     /**
      * endpoints personalizados
@@ -149,16 +143,16 @@ public class EquipoService {
             equipoDTO.setActivado(equipo.getActivado());
     
             // Mapear miembros a UsuarioDTO
-            List<UsuarioDTO> integrantes = equipo.getMiembros().stream().map(miembro -> {
+            List<UsuarioBasicoDTO> integrantes = equipo.getMiembros().stream().map(miembro -> {
                 Usuario usuario = miembro.getUsuario();
-                UsuarioDTO usuarioDTO = new UsuarioDTO();
-                usuarioDTO.setId(usuario.getId());
-                usuarioDTO.setNombres(usuario.getNombres());
-                usuarioDTO.setApellidos(usuario.getApellidos());
-                usuarioDTO.setEmail(usuario.getEmail());
-                usuarioDTO.setTelefono(usuario.getTelefono());
-                usuarioDTO.setRol(miembro.getRol().getNombre());
-                return usuarioDTO;
+                UsuarioBasicoDTO usuarioBasicoDTO = new UsuarioBasicoDTO();
+                usuarioBasicoDTO.setId(usuario.getId());
+                usuarioBasicoDTO.setNombres(usuario.getNombres());
+                usuarioBasicoDTO.setApellidos(usuario.getApellidos());
+                usuarioBasicoDTO.setEmail(usuario.getEmail());
+                usuarioBasicoDTO.setTelefono(usuario.getTelefono());
+                usuarioBasicoDTO.setRol(miembro.getRol().getNombre());
+                return usuarioBasicoDTO;
             }).collect(Collectors.toList());
     
             equipoDTO.setIntegrantes(integrantes);
@@ -175,26 +169,84 @@ public class EquipoService {
             EquipoDTO equipoDTO = new EquipoDTO();
             equipoDTO.setId(equipo.getId());
             equipoDTO.setNombre(equipo.getNombre());
-            equipoDTO.setProyectoId(equipo.getProyecto().getId());
+            if(equipoDTO.getProyectoId() != null)
+                equipoDTO.setProyectoId(equipo.getProyecto().getId());
+            if(equipoDTO.getUsuarioCapitan() != null)
+                equipoDTO.setUsuarioCapitan(DTOConverter.convertirAUsuarioBasicoDTO(equipo.getCapitan()));
             equipoDTO.setActivado(equipo.getActivado());
 
             // Mapear miembros a UsuarioDTO
-            List<UsuarioDTO> integrantes = equipo.getMiembros().stream().map(miembro -> {
+            List<UsuarioBasicoDTO> integrantes = equipo.getMiembros().stream().map(miembro -> {
                 Usuario usuario = miembro.getUsuario();
-                UsuarioDTO usuarioDTO = new UsuarioDTO();
-                usuarioDTO.setId(usuario.getId());
-                usuarioDTO.setNombres(usuario.getNombres());
-                usuarioDTO.setApellidos(usuario.getApellidos());
-                usuarioDTO.setEmail(usuario.getEmail());
-                usuarioDTO.setTelefono(usuario.getTelefono());
-                usuarioDTO.setRol(miembro.getRol().getNombre());
-                return usuarioDTO;
+                UsuarioBasicoDTO usuarioBasicoDTO = new UsuarioBasicoDTO();
+                usuarioBasicoDTO.setId(usuario.getId());
+                usuarioBasicoDTO.setNombres(usuario.getNombres());
+                usuarioBasicoDTO.setApellidos(usuario.getApellidos());
+                usuarioBasicoDTO.setEmail(usuario.getEmail());
+                usuarioBasicoDTO.setTelefono(usuario.getTelefono());
+                usuarioBasicoDTO.setRol(miembro.getRol().getNombre());
+                return usuarioBasicoDTO;
             }).collect(Collectors.toList());
 
             equipoDTO.setIntegrantes(integrantes);
             return equipoDTO;
         }).collect(Collectors.toList());
     }
+
+    public List<EquipoDTO> getEquiposByCapitan(UUID capitanId) {
+        List<Equipo> equipos = equipoRepository.findEquiposByCapitanIdWithRoles(capitanId);
+    
+        return equipos.stream().map(equipo -> {
+            EquipoDTO equipoDTO = new EquipoDTO();
+            equipoDTO.setId(equipo.getId());
+            equipoDTO.setNombre(equipo.getNombre());
+            if (equipo.getProyecto() != null)
+                equipoDTO.setProyectoId(equipo.getProyecto().getId());
+            if (equipo.getCapitan() != null){
+                UsuarioBasicoDTO capitan = DTOConverter.convertirAUsuarioBasicoDTO(equipo.getCapitan());
+                capitan.setRol("Project Manager");
+                equipoDTO.setUsuarioCapitan(capitan);
+            }
+            equipoDTO.setActivado(equipo.getActivado());
+    
+            // Mapear miembros a UsuarioDTO
+            List<UsuarioBasicoDTO> integrantes = equipo.getMiembros().stream().map(miembro -> {
+                UsuarioBasicoDTO usuarioBasicoDTO = DTOConverter.convertirAUsuarioBasicoDTO(miembro.getUsuario());
+                usuarioBasicoDTO.setRol(miembro.getRol().getNombre());
+                return usuarioBasicoDTO;
+            }).collect(Collectors.toList());
+    
+            equipoDTO.setIntegrantes(integrantes);
+            return equipoDTO;
+        }).collect(Collectors.toList());
+    }
+
+
+    public List<EquipoDTO> getEquiposByUsuarioMiembro(UUID usuarioId) {
+        List<Equipo> equipos = equipoRepository.findEquiposByUsuarioMiembroId(usuarioId);
+
+        return equipos.stream().map(equipo -> {
+            List<Miembro> miembros = miembroRepository.findMiembrosByEquipoId(equipo.getId());
+
+            EquipoDTO equipoDTO = new EquipoDTO();
+            equipoDTO.setId(equipo.getId());
+            equipoDTO.setNombre(equipo.getNombre());
+            equipoDTO.setActivado(equipo.getActivado());
+
+            // Mapear miembros
+            List<UsuarioBasicoDTO> integrantes = miembros.stream().map(miembro -> {
+                UsuarioBasicoDTO usuarioBasicoDTO = DTOConverter.convertirAUsuarioBasicoDTO(miembro.getUsuario());
+                usuarioBasicoDTO.setRol(miembro.getRol().getNombre());
+                return usuarioBasicoDTO;
+            }).collect(Collectors.toList());
+
+            equipoDTO.setIntegrantes(integrantes);
+            return equipoDTO;
+        }).collect(Collectors.toList());
+    }
+
+    
+    
 
 
 

@@ -17,8 +17,12 @@ public class Equipo {
     private String nombre;
 
     @ManyToOne
-    @JoinColumn(name = "id_proyecto", nullable = false)
+    @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario_capitan", nullable = false)
+    private Usuario capitan;
 
 
     @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -66,6 +70,14 @@ public class Equipo {
 
     public void setProyecto(Proyecto proyecto) {
         this.proyecto = proyecto;
+    }
+
+    public Usuario getCapitan() {
+        return capitan;
+    }
+
+    public void setCapitan(Usuario capitan) {
+        this.capitan = capitan;
     }
 
     public Boolean getActivado() {

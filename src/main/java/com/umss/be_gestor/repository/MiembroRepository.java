@@ -30,4 +30,7 @@ public interface MiembroRepository extends JpaRepository<Miembro, MiembroId> {
     """)
     List<Miembro> findMiembrosByProjectManager(@Param("userId") UUID userId);
 
+    @Query("SELECT m FROM Miembro m JOIN FETCH m.usuario WHERE m.equipo.id = :equipoId")
+    List<Miembro> findMiembrosByEquipoId(@Param("equipoId") UUID equipoId);
+
 }

@@ -32,4 +32,23 @@ public interface EquipoRepository extends JpaRepository<Equipo, UUID> {
     List<Equipo> findEquiposByProjectManagerIdWithRoles(@Param("projectManagerId") UUID projectManagerId);
 
 
+    @Query("SELECT DISTINCT e FROM Equipo e " +
+       "LEFT JOIN FETCH e.miembros m " +
+       "LEFT JOIN FETCH m.usuario u " +
+       "LEFT JOIN FETCH m.rol r " +
+       "WHERE e.capitan.id = :capitanId")
+    List<Equipo> findEquiposByCapitanIdWithRoles(@Param("capitanId") UUID capitanId);
+
+    @Query("SELECT DISTINCT e FROM Equipo e " +
+        "JOIN FETCH e.miembros m " +
+        "JOIN FETCH m.usuario u " +
+        "WHERE u.id = :usuarioId")
+    List<Equipo> findEquiposByUsuarioMiembroId(@Param("usuarioId") UUID usuarioId);
+
+
+
+
+
+
+
 }

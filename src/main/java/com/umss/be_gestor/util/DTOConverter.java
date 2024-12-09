@@ -20,6 +20,10 @@ import java.util.stream.Collectors;
 @Component
 public class DTOConverter {
 
+
+
+
+
      // Método para convertir Workspace a WorkspaceDTO
      public static WorkspaceDTO convertToWorkspaceDTO(Workspace workspace) {
         WorkspaceDTO workspaceDTO = new WorkspaceDTO();
@@ -188,7 +192,7 @@ public class DTOConverter {
         // Convertir miembros a UsuarioDTO
         equipoDTO.setIntegrantes(
             equipo.getMiembros().stream()
-                .map(miembro -> convertToUsuarioDTO(miembro.getUsuario()))
+                .map(miembro -> convertirAUsuarioBasicoDTO(miembro.getUsuario()))
                 .collect(Collectors.toList())
         );
     
@@ -296,17 +300,20 @@ public class DTOConverter {
     }
 
     public static UsuarioBasicoDTO convertirAUsuarioBasicoDTO(Usuario usuario) {
-        if (usuario == null) {
-            return null;
+        UsuarioBasicoDTO usuarioBasicoDTO = null;
+        if (usuario != null) {
+            usuarioBasicoDTO =  new UsuarioBasicoDTO();
+            usuarioBasicoDTO.setId(usuario.getId());
+            usuarioBasicoDTO.setNombres(usuario.getNombres());
+            usuarioBasicoDTO.setApellidos(usuario.getApellidos());
+            usuarioBasicoDTO.setUsername(usuario.getApellidos());
+            usuarioBasicoDTO.setEmail(usuario.getEmail());
+            usuarioBasicoDTO.setFechaNacimiento(usuario.getNacimiento().toString());
+            usuarioBasicoDTO.setTelefono(usuario.getTelefono());
+                
         }
-        return new UsuarioBasicoDTO(
-                usuario.getId(),
-                usuario.getNombres(),
-                usuario.getApellidos(),
-                usuario.getEmail(),
-                usuario.getNacimiento().toString(),
-                usuario.getUsername()
-        );
+        return usuarioBasicoDTO;
+
     }
 
     
@@ -358,6 +365,33 @@ public class DTOConverter {
             workspace.getProjectManager().getId(),
             workspace.getActivado()
         );
+    }
+
+
+    public static EquipoDTO convertToDTO(Equipo equipo) {
+        EquipoDTO equipoDTO = new EquipoDTO();
+        equipoDTO.setId(equipo.getId());
+        equipoDTO.setNombre(equipo.getNombre());
+        if(equipo.getProyecto()!=null)
+            equipoDTO.setProyectoId(equipo.getProyecto().getId());
+        if(equipo.getCapitan() != null)
+            equipoDTO.setUsuarioCapitan(DTOConverter.convertirAUsuarioBasicoDTO(equipo.getCapitan()));
+        equipoDTO.setActivado(equipo.getActivado());
+        return equipoDTO;
+    }
+
+    public static Equipo convertToEntity(EquipoDTO equipoDTO, ProyectoRepository proyectoRepository, UsuarioRepository usuarioRepository) {
+        Equipo equipo = new Equipo();
+        equipo.setNombre(equipoDTO.getNombre());
+        if(equipoDTO.getProyectoId() != null){
+            Proyecto proyecto = proyectoRepository.findById(equipoDTO.getProyectoId()).orElse(null);
+            equipo.setProyecto(proyecto);
+        }
+        Usuario usuario = usuarioRepository.findById(equipoDTO.getUsuarioCapitan().getId()).orElse(null);
+        if(usuario != null)
+            equipo.setCapitan(usuario);
+        equipo.setActivado(equipoDTO.getActivado());
+        return equipo;
     }
     
 

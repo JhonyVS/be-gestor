@@ -21,8 +21,9 @@ public class EquipoController {
 
     @Autowired
     private EquipoService equipoService;
-
-    private final MiembroService miembroService;
+    
+    @Autowired
+    private MiembroService miembroService;
 
     @Autowired
     public EquipoController(MiembroService miembroService) {
@@ -75,5 +76,19 @@ public class EquipoController {
         return ResponseEntity.ok(equipos);
     }
     
+
+    @GetMapping("/capitan/{capitanId}")
+    public ResponseEntity<List<EquipoDTO>> getEquiposByCapitan(@PathVariable UUID capitanId) {
+        List<EquipoDTO> equipos = equipoService.getEquiposByCapitan(capitanId);
+        return ResponseEntity.ok(equipos);
+    }
+
+    @GetMapping("/member/{usuarioId}")
+    public ResponseEntity<List<EquipoDTO>> getEquiposByUsuarioMiembro(@PathVariable UUID usuarioId) {
+        List<EquipoDTO> equipos = equipoService.getEquiposByUsuarioMiembro(usuarioId);
+        return ResponseEntity.ok(equipos);
+    }
+
+
 
 }

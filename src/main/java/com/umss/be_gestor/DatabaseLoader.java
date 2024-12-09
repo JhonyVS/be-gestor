@@ -183,6 +183,7 @@ public class DatabaseLoader {
                     equipo.setNombre(faker.team().name());
                     equipo.setActivado(true);
                     equipo.setProyecto(proyecto);
+                    equipo.setCapitan(proyecto.getProjectManager());
                     equipo.setUpdatedAt(LocalDateTime.now());
                     equipo.setCreatedAt(LocalDateTime.now());
                     equipoRepository.save(equipo);
@@ -192,7 +193,7 @@ public class DatabaseLoader {
 
             // Poblar Roles
             if (rolRepository.count() == 0) {
-                String[] roles = {"Scrum Master","Designer UX", "Developer", "QA Tester"};
+                String[] roles = {"Scrum Master","UX Designer", "Developer", "QA Tester"};
                 for (String roleName : roles) {
                     Rol rol = new Rol();
                     rol.setNombre(roleName);

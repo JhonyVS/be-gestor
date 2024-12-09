@@ -92,5 +92,10 @@ public class UsuarioController {
         return ResponseEntity.ok(workspace);
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UsuarioBasicoDTO> getUsuarioBasicoPorEmail(@PathVariable String email) {
+        UsuarioBasicoDTO usuarioBasico = usuarioService.getUsuarioBasicoPorEmail(email);
+        return ResponseEntity.ok(usuarioBasico);
+    }
 
 }

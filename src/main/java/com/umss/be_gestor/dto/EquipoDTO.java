@@ -8,17 +8,18 @@ public class EquipoDTO {
     private UUID id;
     private String nombre;
     private UUID proyectoId;
+    private UsuarioBasicoDTO usuarioCapitan;
     private Boolean activado;
 
-    private List<UsuarioDTO> integrantes;
+    private List<UsuarioBasicoDTO> integrantes;
 
     
 
-    public List<UsuarioDTO> getIntegrantes() {
+    public List<UsuarioBasicoDTO> getIntegrantes() {
         return integrantes;
     }
 
-    public void setIntegrantes(List<UsuarioDTO> integrantes) {
+    public void setIntegrantes(List<UsuarioBasicoDTO> integrantes) {
         this.integrantes = integrantes;
     }
 
@@ -45,6 +46,14 @@ public class EquipoDTO {
 
     public void setProyectoId(UUID proyectoId) {
         this.proyectoId = proyectoId;
+    }
+
+    public UsuarioBasicoDTO getUsuarioCapitan() {
+        return usuarioCapitan;
+    }
+
+    public void setUsuarioCapitan(UsuarioBasicoDTO usuarioCapitan) {
+        this.usuarioCapitan = usuarioCapitan;
     }
 
     public Boolean getActivado() {
