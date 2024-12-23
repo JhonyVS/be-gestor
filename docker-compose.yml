@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: be-gestor-db
+    environment:
+      POSTGRES_DB: be-gestor
+      POSTGRES_USER: be-gestor
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # Cambiado el puerto externo a 5433
+
+volumes:
+  postgres_data: 
