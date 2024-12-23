@@ -9,6 +9,7 @@ import com.umss.be_gestor.model.Historia;
 import com.umss.be_gestor.model.Tarjeta;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.TareaRepository;
+import com.umss.be_gestor.repository.EstadoTareaRepository;
 import com.umss.be_gestor.repository.HistoriaRepository;
 import com.umss.be_gestor.repository.TarjetaRepository;
 import com.umss.be_gestor.repository.UsuarioRepository;
@@ -34,6 +35,9 @@ public class TareaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private EstadoTareaRepository estadoTareaRepository;
+
     public TareaService() {
     }
 
@@ -56,7 +60,7 @@ public class TareaService {
     }
 
     public TareaDTO createTarea(TareaDTO tareaDTO) {
-        Tarea tarea = DTOConverter.convertToEntity(tareaDTO,historiaRepository,tarjetaRepository,usuarioRepository);
+        Tarea tarea = DTOConverter.convertToEntity(tareaDTO,historiaRepository,tarjetaRepository,usuarioRepository,estadoTareaRepository);
         tarea.setCreatedAt(LocalDateTime.now());
         tarea.setUpdatedAt(LocalDateTime.now());
         tarea.setActivado(true); // Inicializar activado como true

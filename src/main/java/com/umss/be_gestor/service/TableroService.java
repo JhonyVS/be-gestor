@@ -2,13 +2,20 @@ package com.umss.be_gestor.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.umss.be_gestor.dto.ActualizarTareasRequest;
 import com.umss.be_gestor.dto.TableroDTO;
 import com.umss.be_gestor.dto.TarjetaDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Tablero;
+import com.umss.be_gestor.model.Tarea;
+import com.umss.be_gestor.model.Tarjeta;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.model.Workspace;
 import com.umss.be_gestor.repository.TableroRepository;
+import com.umss.be_gestor.repository.TareaRepository;
+import com.umss.be_gestor.repository.TarjetaRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
 import com.umss.be_gestor.repository.WorkspaceRepository;
 import com.umss.be_gestor.util.DTOConverter;
@@ -29,6 +36,12 @@ public class TableroService {
 
     @Autowired
     private WorkspaceRepository workspaceRepository;
+
+    @Autowired
+    private TarjetaRepository tarjetaRepository;
+
+    @Autowired
+    private TareaRepository tareaRepository;
 
     public List<TableroDTO> getAllTableros() {
         return tableroRepository.findAll().stream()
@@ -114,6 +127,23 @@ public class TableroService {
             .map(DTOConverter::convertToDTO)
             .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void actualizarTareas(UUID tableroId, List<ActualizarTareasRequest> actualizarTareasRequests) {
+        for (ActualizarTareasRequest request : actualizarTareasRequests) {
+            Tarjeta tarjeta = tarjetaRepository.findById(request.getTarjetaId())
+                .orElseThrow(() -> new NotFoundException("Tarjeta no encontrada: " + request.getTarjetaId(), null));
+
+            for (UUID tareaId : request.getTareasIds()) {
+                Tarea tarea = tareaRepository.findById(tareaId)
+                    .orElseThrow(() -> new NotFoundException("Tarea no encontrada: " + tareaId, null));
+
+                tarea.setTarjeta(tarjeta);
+                tareaRepository.save(tarea);
+            }
+        }
+    }
+
 
 
 

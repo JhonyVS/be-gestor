@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.umss.be_gestor.dto.ActualizarTareasRequest;
 import com.umss.be_gestor.dto.TableroDTO;
 import com.umss.be_gestor.dto.TarjetaDTO;
 import com.umss.be_gestor.model.Tablero;
@@ -56,4 +57,16 @@ public class TableroController {
         List<TarjetaDTO> tarjetas = tableroService.getTarjetasByTableroId(tableroId);
         return ResponseEntity.ok(tarjetas);
     }
+
+    @PutMapping("/{id}/actualizar-tareas")
+    public ResponseEntity<Void> actualizarTareas(
+        @PathVariable UUID id, 
+        @RequestBody List<ActualizarTareasRequest> actualizarTareasRequests
+    ) {
+        
+        tableroService.actualizarTareas(id, actualizarTareasRequests);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

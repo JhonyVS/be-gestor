@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import com.umss.be_gestor.dto.*;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
+import com.umss.be_gestor.repository.EstadoTareaRepository;
 import com.umss.be_gestor.repository.HistoriaRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
 import com.umss.be_gestor.repository.TableroRepository;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class DTOConverter {
-
 
 
 
@@ -142,6 +142,14 @@ public class DTOConverter {
         tareaDTO.setDescripcion(tarea.getDescripcion());
         tareaDTO.setEstimacion(tarea.getEstimacion());
         tareaDTO.setActivado(tarea.getActivado());
+        // Agregar más datos si es necesario
+        if (tarea.getEstado() != null) {
+            tareaDTO.setEstado(tarea.getEstado());
+        }
+        if (tarea.getUsuarioAsignado() != null) {
+            tareaDTO.setUsuarioAsignado(DTOConverter.convertirAUsuarioBasicoDTO(tarea.getUsuarioAsignado()));
+        }
+
         return tareaDTO;
     }
     
@@ -331,18 +339,25 @@ public class DTOConverter {
         return tareaDTO;
     }
 
-    public static Tarea convertToEntity(TareaDTO tareaDTO,HistoriaRepository historiaRepository, TarjetaRepository tarjetaRepository,UsuarioRepository usuarioRepository) {
+    public static Tarea convertToEntity(TareaDTO tareaDTO,HistoriaRepository historiaRepository, TarjetaRepository tarjetaRepository,UsuarioRepository usuarioRepository,EstadoTareaRepository estadoTareaRepository) {
         Tarea tarea = new Tarea();
 
         tarea.setId(tareaDTO.getId());
         tarea.setTitulo(tareaDTO.getTitulo());
         tarea.setDescripcion(tareaDTO.getDescripcion());
         tarea.setEstimacion(tareaDTO.getEstimacion());
-        tarea.setEstado(tareaDTO.getEstado());
-        tarea.setHistoria(historiaRepository.findById(tareaDTO.getHistoriaId()).orElse(null));
+        // Establecer el estado
+        if (tareaDTO.getEstado() != null) {
+            tarea.setEstado(tareaDTO.getEstado());
+        } else {
+            tarea.setEstado(estadoTareaRepository.findByNombre("Pendiente").orElse(null));
+        }
+        if(tareaDTO.getHistoriaId() != null)
+            tarea.setHistoria(historiaRepository.findById(tareaDTO.getHistoriaId()).orElse(null));
         tarea.setTarjeta(tarjetaRepository.findById(tareaDTO.getTarjetaId()).orElse(null));
-        tarea.setUsuarioAsignado(usuarioRepository.findById(tareaDTO.getUsuarioAsignado().getId()).orElse(null));
-        tarea.setActivado(tareaDTO.getActivado());
+        if(tareaDTO.getUsuarioAsignado() != null)
+            tarea.setUsuarioAsignado(usuarioRepository.findById(tareaDTO.getUsuarioAsignado().getId()).orElse(null));
+        //tarea.setActivado(tareaDTO.getActivado());
         return tarea;
     }
 
