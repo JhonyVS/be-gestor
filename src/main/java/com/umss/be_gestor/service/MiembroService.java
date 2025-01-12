@@ -50,7 +50,7 @@ public class MiembroService {
         return miembroRepository.findAll();
     }
 
-    @Autowired
+
     public MiembroService(MiembroRepository miembroRepository, DTOConverter dtoConverter) {
         this.miembroRepository = miembroRepository;
     }

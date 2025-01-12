@@ -38,7 +38,7 @@ public class EquipoService {
 
 
 
-    @Autowired
+
     public EquipoService(EquipoRepository equipoRepository) {
         this.equipoRepository = equipoRepository;
 

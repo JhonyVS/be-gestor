@@ -52,7 +52,7 @@ public class ProyectoService {
     }
 
 
-    @Autowired
+
     public ProyectoService(MiembroRepository miembroRepository) {
         this.miembroRepository = miembroRepository;
         

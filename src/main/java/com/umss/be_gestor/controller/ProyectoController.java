@@ -26,7 +26,7 @@ public class ProyectoController {
     private EquipoService equipoService;
     
 
-    @Autowired
+
     public ProyectoController(EquipoService equipoService) {
         this.equipoService = equipoService;
     }
