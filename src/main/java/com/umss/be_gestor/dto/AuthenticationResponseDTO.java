@@ -6,17 +6,9 @@ import java.util.UUID;
 public class AuthenticationResponseDTO {
     private String jwt;
     private UUID id;
-    public UUID getId() {
-        return id;
-    }
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     private String username;
     private String nombres;
     private String apellidos;
-    //private List<UUID> projectUUIDs;
 
     public AuthenticationResponseDTO(String jwt, UUID id,String username, String nombres, String apellidos) {
         this.jwt = jwt;
@@ -24,13 +16,17 @@ public class AuthenticationResponseDTO {
         this.username = username;
         this.nombres = nombres;
         this.apellidos = apellidos;
-        //this.projectUUIDs = projectUUIDs;
     }
     public AuthenticationResponseDTO(){
 
     }
-
     // Getters y setters
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
+    }
     public String getJwt() {
         return jwt;
     }
@@ -63,11 +59,4 @@ public class AuthenticationResponseDTO {
         this.apellidos = apellidos;
     }
 
-    // public List<UUID> getProjectUUIDs() {
-    //     return projectUUIDs;
-    // }
-
-    // public void setProjectUUIDs(List<UUID> projectUUIDs) {
-    //     this.projectUUIDs = projectUUIDs;
-    // }
 }

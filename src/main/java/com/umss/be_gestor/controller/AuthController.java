@@ -34,24 +34,18 @@ public class AuthController {
     private UsuarioService usuarioService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Nombre de usuario o contraseña incorrectos", e);
-        }
+    public ResponseEntity<AuthenticationResponseDTO> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+        // Autenticar al usuario
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+        );
 
         // Cargar detalles del usuario
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails);
 
         // Obtener el usuario desde la base de datos
-        UsuarioDTO usuario = usuarioService.getUsuarioByUsername(authenticationRequest.getUsername()); 
-
-        // Obtener la lista de UUIDs de los proyectos
-        //List<UUID> projectUUIDs = usuarioService.getProjectUUIDs(usuario.getId());
+        UsuarioDTO usuario = usuarioService.getUsuarioByUsername(authenticationRequest.getUsername());
 
         // Crear y devolver el DTO con el JWT, username, nombres, apellidos y proyectos
         AuthenticationResponseDTO responseDTO = new AuthenticationResponseDTO(
@@ -60,9 +54,9 @@ public class AuthController {
                 usuario.getUsername(),
                 usuario.getNombres(),
                 usuario.getApellidos()
-                //projectUUIDs
         );
 
         return ResponseEntity.ok(responseDTO);
     }
+
 }
