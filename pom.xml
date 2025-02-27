@@ -38,6 +38,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		 <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.8.4</version>
+        </dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -91,7 +97,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
 				<version>8.0.5</version> 
                 <configuration>
-                    <url>jdbc:postgresql://db:5432/be-gestor</url>
+                    <url>jdbc:postgresql://localhost:5432/be-gestor</url>
                     <user>be-gestor</user>
                     <password>12345</password>
                     <driver>org.postgresql.Driver</driver>

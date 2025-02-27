@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .cors().and() // Habilita CORS
             .authorizeRequests(requests -> requests
                 .antMatchers("/login", "/usuario/full", "/usuario/create",
-                            "/usuario/check-username", "/usuario/check-email").permitAll()
+                            "/usuario/check-username", "/usuario/check-email","/v3/api-docs","/swagger-ui/**","/swagger-ui.html","/v3/api-docs/swagger-config").permitAll()
                 .antMatchers("/usuario/me").authenticated()
                 .anyRequest().authenticated())
             .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
