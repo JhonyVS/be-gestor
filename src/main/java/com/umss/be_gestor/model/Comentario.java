@@ -6,6 +6,8 @@ import java.util.UUID;
 import javax.persistence.*;
 
 
+
+
 @Entity
 @Table(name = "comentario")
 public class Comentario {

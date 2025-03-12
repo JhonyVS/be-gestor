@@ -244,8 +244,7 @@ public class EquipoService {
         }).collect(Collectors.toList());
     }
 
-    
-    
+
 
 
 

@@ -21,6 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
 
+
+
     public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtRequestFilter jwtRequestFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
@@ -37,12 +39,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .cors().and() // Habilita CORS
             .authorizeRequests(requests -> requests
                 .antMatchers("/login", "/usuario/full", "/usuario/create",
-                            "/usuario/check-username", "/usuario/check-email","/v3/api-docs","/swagger-ui/**","/swagger-ui.html","/v3/api-docs/swagger-config").permitAll()
+                            "/usuario/check-username", "/usuario/check-email","/v3/api-docs","/swagger-ui/**","/swagger-ui.html","/v3/api-docs/swagger-config","/swagger-ui").permitAll()
                 .antMatchers("/usuario/me").authenticated()
                 .anyRequest().authenticated())
             .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        
     }
 
     @Bean

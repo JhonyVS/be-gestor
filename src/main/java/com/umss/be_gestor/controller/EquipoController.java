@@ -80,7 +80,7 @@ public class EquipoController {
     @GetMapping("/capitan/{capitanId}")
     public ResponseEntity<List<EquipoDTO>> getEquiposByCapitan(@PathVariable UUID capitanId) {
         List<EquipoDTO> equipos = equipoService.getEquiposByCapitan(capitanId);
-        return ResponseEntity.ok(equipos);
+        return ResponseEntity.ok(equipos); 
     }
 
     @GetMapping("/member/{usuarioId}")
