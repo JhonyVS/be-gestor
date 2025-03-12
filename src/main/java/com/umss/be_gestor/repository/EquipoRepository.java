@@ -21,7 +21,7 @@ public interface EquipoRepository extends JpaRepository<Equipo, UUID> {
        "LEFT JOIN FETCH m.rol r " +
        "WHERE e.proyecto.id = :projectId")
     List<Equipo> findEquiposByProyectoIdWithRoles(@Param("projectId") UUID projectId);
-
+ 
 
 
     @Query("SELECT DISTINCT e FROM Equipo e " +
