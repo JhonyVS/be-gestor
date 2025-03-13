@@ -10,7 +10,7 @@ import com.umss.be_gestor.dto.WorkspaceDTO;
 import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.model.Workspace;
-import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 import com.umss.be_gestor.repository.WorkspaceRepository;
 import com.umss.be_gestor.util.DTOConverter;
 
@@ -24,7 +24,7 @@ public class UsuarioService {
     
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
 
     @Autowired
     private WorkspaceRepository workspaceRepository;

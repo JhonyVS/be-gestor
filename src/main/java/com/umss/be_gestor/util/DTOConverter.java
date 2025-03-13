@@ -8,10 +8,10 @@ import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.*;
 import com.umss.be_gestor.repository.EstadoTareaRepository;
 import com.umss.be_gestor.repository.HistoriaRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
 import com.umss.be_gestor.repository.TableroRepository;
 import com.umss.be_gestor.repository.TarjetaRepository;
-import com.umss.be_gestor.repository.UsuarioRepository;
 import com.umss.be_gestor.repository.WorkspaceRepository;
 
 import java.util.stream.Collectors;
@@ -156,7 +156,7 @@ public class DTOConverter {
 
 
     // Método para convertir WorkspaceDTO a Workspace (requiere UsuarioRepository)
-    public static Workspace convertToWorkspaceEntity(WorkspaceDTO workspaceDTO, UsuarioRepository usuarioRepository) {
+    public static Workspace convertToWorkspaceEntity(WorkspaceDTO workspaceDTO, IUsuarioRepository usuarioRepository) {
         Workspace workspace = new Workspace();
 
         Usuario projectManager = usuarioRepository.findById(workspaceDTO.getProjectManagerId()).orElse(null);
@@ -257,7 +257,7 @@ public class DTOConverter {
     }
     
     
-    public static Comentario convertirADominio(ComentarioDTO comentarioDTO, UsuarioRepository usuarioRepository) {
+    public static Comentario convertirADominio(ComentarioDTO comentarioDTO, IUsuarioRepository usuarioRepository) {
         Comentario comentario = new Comentario();
         comentario.setId(comentarioDTO.getId());
     
@@ -339,7 +339,7 @@ public class DTOConverter {
         return tareaDTO;
     }
 
-    public static Tarea convertToEntity(TareaDTO tareaDTO,HistoriaRepository historiaRepository, TarjetaRepository tarjetaRepository,UsuarioRepository usuarioRepository,EstadoTareaRepository estadoTareaRepository) {
+    public static Tarea convertToEntity(TareaDTO tareaDTO,HistoriaRepository historiaRepository, TarjetaRepository tarjetaRepository,IUsuarioRepository usuarioRepository,EstadoTareaRepository estadoTareaRepository) {
         Tarea tarea = new Tarea();
 
         tarea.setId(tareaDTO.getId());
@@ -395,7 +395,7 @@ public class DTOConverter {
         return equipoDTO;
     }
 
-    public static Equipo convertToEntity(EquipoDTO equipoDTO, ProyectoRepository proyectoRepository, UsuarioRepository usuarioRepository) {
+    public static Equipo convertToEntity(EquipoDTO equipoDTO, ProyectoRepository proyectoRepository, IUsuarioRepository usuarioRepository) {
         Equipo equipo = new Equipo();
         equipo.setNombre(equipoDTO.getNombre());
         if(equipoDTO.getProyectoId() != null){

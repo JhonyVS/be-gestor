@@ -14,7 +14,7 @@ import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.model.Equipo;
 import com.umss.be_gestor.model.Rol;
 import com.umss.be_gestor.repository.MiembroRepository;
-import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 import com.umss.be_gestor.util.DTOConverter;
 import com.umss.be_gestor.repository.EquipoRepository;
 import com.umss.be_gestor.repository.RolRepository;
@@ -31,7 +31,7 @@ public class MiembroService {
     private MiembroRepository miembroRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
 
     @Autowired
     private EquipoRepository equipoRepository;

@@ -1,5 +1,11 @@
 package com.umss.be_gestor.model;
-import javax.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 
 // import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,41 +22,6 @@ public class EstadoTarea {
 
     @Column(nullable = false, unique = true) // Esto asegura que el nombre no sea nulo ni duplicado
     private String nombre;
-
-    // @Autowired
-    // private EstadoTareaRepository estadoTareaRepository;
-
-
-
-    // public EstadoTarea PENDIENTE;
-    // public EstadoTarea TRABAJANDO;
-    // public EstadoTarea TERMINADO;
-
-    // public  EstadoTarea getEstadoTareaPendiente(){
-    //     if(PENDIENTE == null){
-    //         EstadoTarea et = new EstadoTarea();
-    //         et.setNombre("Pendiente");
-    //         PENDIENTE = estadoTareaRepository.save(et);
-    //     }
-    //     return PENDIENTE;
-    // }
-
-    // public EstadoTarea getEstadoTareaTrabajando(){
-    //     if(TRABAJANDO == null){
-    //         EstadoTarea et = new EstadoTarea();
-    //         et.setNombre("Trabajando");
-    //         TRABAJANDO = estadoTareaRepository.save(et);
-    //     }
-    //     return TRABAJANDO;
-    // }
-    // public EstadoTarea getEstadoTareaTerminado(){
-    //     if(TERMINADO == null){
-    //         EstadoTarea et = new EstadoTarea();
-    //         et.setNombre("Terminado");
-    //         TERMINADO = estadoTareaRepository.save(et);
-    //     }
-    //     return TERMINADO;
-    // }
 
     public EstadoTarea(){}
 

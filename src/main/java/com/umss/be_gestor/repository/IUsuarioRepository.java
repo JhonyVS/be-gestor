@@ -1,6 +1,5 @@
 package com.umss.be_gestor.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -10,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
+public interface IUsuarioRepository extends IGenericRepository<Usuario, UUID> {
     Optional<Usuario> findByUsername(String username);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);

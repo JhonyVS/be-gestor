@@ -8,14 +8,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.umss.be_gestor.model.Usuario;
-import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UsuarioRepository usuarioRepository;
+    private final IUsuarioRepository usuarioRepository;
 
-    public UserDetailsServiceImpl(UsuarioRepository usuarioRepository) {
+    public UserDetailsServiceImpl(IUsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 

@@ -7,7 +7,7 @@ import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.ComentarioRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
-import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 import com.umss.be_gestor.util.DTOConverter;
 
 import org.springframework.stereotype.Service;
@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 public class ComentarioService {
 
     private final ComentarioRepository comentarioRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final IUsuarioRepository usuarioRepository;
     private final ProyectoRepository proyectoRepository;
 
-    public ComentarioService(ComentarioRepository comentarioRepository, UsuarioRepository usuarioRepository,
+    public ComentarioService(ComentarioRepository comentarioRepository, IUsuarioRepository usuarioRepository,
                               ProyectoRepository proyectoRepository) {
         this.comentarioRepository = comentarioRepository;
         this.usuarioRepository = usuarioRepository;

@@ -85,7 +85,7 @@ public class DatabaseLoader {
 
     @Bean
     CommandLineRunner initDatabase(
-            UsuarioRepository usuarioRepository,
+            IUsuarioRepository usuarioRepository,
             ProyectoRepository proyectoRepository,
             EquipoRepository equipoRepository,
             PrioridadRepository prioridadRepository,

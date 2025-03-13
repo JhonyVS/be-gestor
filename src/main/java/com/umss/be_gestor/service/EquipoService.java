@@ -12,7 +12,7 @@ import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.EquipoRepository;
 import com.umss.be_gestor.repository.MiembroRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
-import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
@@ -30,7 +30,7 @@ public class EquipoService {
     private ProyectoRepository proyectoRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
     
     @Autowired
     private MiembroRepository miembroRepository;

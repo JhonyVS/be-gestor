@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.umss.be_gestor.util.ErrorResponse;
@@ -39,13 +40,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException e) {
+    public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException e, WebRequest web) {
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("status", e.getStatus().value());
-        errorResponse.put("error", e.getStatus().getReasonPhrase());
+        errorResponse.put("status", HttpStatus.NOT_FOUND);
+        errorResponse.put("error", web.getDescription(false));
         errorResponse.put("message", e.getReason());
         errorResponse.put("timestamp", System.currentTimeMillis());
-        return new ResponseEntity<>(errorResponse, e.getStatus());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BadCredentialsException.class)

@@ -12,7 +12,7 @@ import com.umss.be_gestor.repository.TareaRepository;
 import com.umss.be_gestor.repository.EstadoTareaRepository;
 import com.umss.be_gestor.repository.HistoriaRepository;
 import com.umss.be_gestor.repository.TarjetaRepository;
-import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
@@ -33,7 +33,7 @@ public class TareaService {
     private TarjetaRepository tarjetaRepository;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
 
     @Autowired
     private EstadoTareaRepository estadoTareaRepository;

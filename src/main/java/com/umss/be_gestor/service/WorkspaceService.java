@@ -10,7 +10,7 @@ import com.umss.be_gestor.exception.NotFoundException;
 import com.umss.be_gestor.model.Workspace;
 import com.umss.be_gestor.model.Usuario;
 import com.umss.be_gestor.repository.WorkspaceRepository;
-import com.umss.be_gestor.repository.UsuarioRepository;
+import com.umss.be_gestor.repository.IUsuarioRepository;
 import com.umss.be_gestor.util.DTOConverter;
 
 import java.time.LocalDateTime;
@@ -26,12 +26,12 @@ public class WorkspaceService {
 
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository;
 
     public WorkspaceService() {
     }
 
-    public WorkspaceService(WorkspaceRepository workspaceRepository, UsuarioRepository usuarioRepository) {
+    public WorkspaceService(WorkspaceRepository workspaceRepository, IUsuarioRepository usuarioRepository) {
         this.workspaceRepository = workspaceRepository;
         this.usuarioRepository = usuarioRepository;
     }
