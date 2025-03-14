@@ -5,7 +5,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-//import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,8 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-//Clase S5
-//@Profile(value = {"dev", "qa", "prod"})
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -26,33 +23,29 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION); //"Authorization"
+    protected void doFilterInternal(@SuppressWarnings("null") HttpServletRequest request, @SuppressWarnings("null") HttpServletResponse response, @SuppressWarnings("null") FilterChain filterChain) throws ServletException, IOException {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        String username = null;
         String jwtToken = null;
+        String username = null;
 
-        //Bearer eyeasdasd
-        if (header != null && header.startsWith("Bearer ")) {
-            final int TOKEN_POSITION = 1;
-            //jwtToken = header.substring(7);
-            jwtToken = header.split(" ")[TOKEN_POSITION];
-
-            try{
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwtToken = authHeader.substring(7); // Extraemos el token
+            try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-            }catch (Exception e){
+            } catch (Exception e) {
                 request.setAttribute("error", e.getMessage());
             }
         }
 
-        if(username != null && jwtToken != null) {
+        // Si ya hay una autenticación en el contexto, no continuamos
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
 
-            if(jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
+            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+                var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 

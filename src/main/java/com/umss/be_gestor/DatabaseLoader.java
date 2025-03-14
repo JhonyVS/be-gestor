@@ -290,7 +290,7 @@ public class DatabaseLoader {
                     for (int i = 0; i < 10; i++) {
                         Historia historia = new Historia();
                         historia.setTitulo(faker.lorem().sentence());
-                        historia.setDescripcion(faker.lorem().paragraph());
+                        historia.setDescripcion(faker.lorem().sentence());
                         historia.setPrioridad(prioridades.get(faker.number().numberBetween(0, prioridades.size())));
                         historia.setProductBacklog(pb);
                         historia.setActivado(true);
@@ -361,7 +361,7 @@ public class DatabaseLoader {
                         for (int j = 0; j < 3; j++) {
                             tarjeta = new Tarjeta();
                             tarjeta.setTitulo(tarjetasArray[j]);
-                            tarjeta.setDescripcion(faker.lorem().paragraph());
+                            tarjeta.setDescripcion(faker.lorem().sentence());
                             tarjeta.setTablero(tablero);
                             tarjeta.setActivado(true);
                             tarjeta.setCreatedAt(LocalDateTime.now());
@@ -380,7 +380,7 @@ public class DatabaseLoader {
                             for (int k = 0; k < num2; k++) {
                                 tarea = new Tarea();
                                 tarea.setTitulo(tareasDevs[faker.number().numberBetween(0,tareasDevs.length)]);
-                                tarea.setDescripcion(faker.lorem().paragraph());
+                                tarea.setDescripcion(faker.lorem().sentence());
                                 tarea.setTarjeta(tarjeta);
                                 tarea.setActivado(true);
                                 tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
@@ -488,7 +488,7 @@ public class DatabaseLoader {
                         for (int j = 0; j < 3; j++) {
                             tarjeta = new Tarjeta();
                             tarjeta.setTitulo(tarjetasArray[j]);
-                            tarjeta.setDescripcion(faker.lorem().paragraph());
+                            tarjeta.setDescripcion(faker.lorem().sentence());
                             tarjeta.setTablero(tablero);
                             tarjeta.setActivado(true);
                             tarjeta.setCreatedAt(LocalDateTime.now());
@@ -499,7 +499,7 @@ public class DatabaseLoader {
                             for (int k = 0; k < num2; k++) {
                                 tarea = new Tarea();
                                 tarea.setTitulo(tasks.get(faker.number().numberBetween(0,tasks.size())));
-                                tarea.setDescripcion(faker.lorem().paragraph());
+                                tarea.setDescripcion(faker.lorem().sentence());
                                 tarea.setTarjeta(tarjeta);
                                 tarea.setActivado(true);
                                 tarea.setEstado(ets.get(faker.number().numberBetween(0, ets.size()))); 

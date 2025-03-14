@@ -1,5 +1,5 @@
 # Usar una imagen base con JDK y Maven
-FROM maven:3.9.9-eclipse-temurin-17
+FROM maven:3.9.9-eclipse-temurin-21
 
 # Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
