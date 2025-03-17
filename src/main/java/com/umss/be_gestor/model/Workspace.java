@@ -10,8 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "workspace")
+@AllArgsConstructor
 public class Workspace {
 
     @Id

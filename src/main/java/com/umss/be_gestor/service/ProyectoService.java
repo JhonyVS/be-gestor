@@ -160,9 +160,9 @@ public class ProyectoService {
     public List<ProyectoDTO> getProyectosByProjectManager(UUID projectManagerId) {
         List<Proyecto> proyectos = proyectoRepository.findAllByProjectManagerId(projectManagerId);
     
-        if (proyectos.isEmpty()) {
-            throw new NotFoundException("No se encontraron proyectos para el Project Manager con ID: " + projectManagerId, null);
-        }
+        // if (proyectos.isEmpty()) {
+        //     throw new NotFoundException("No se encontraron proyectos para el Project Manager con ID: " + projectManagerId, null);
+        // }
     
         return proyectos.stream()
                 .map(DTOConverter::convertToProyectoDTO)

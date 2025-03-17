@@ -1,32 +1,57 @@
 package com.umss.be_gestor.exception;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.umss.be_gestor.util.ErrorResponse;
+import com.umss.be_gestor.record.CustomErrorResponse;
+import com.umss.be_gestor.record.GenericResponse;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception e) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorResponse.put("error", "Internal Server Error");
-        errorResponse.put("message", "Ocurrió un error inesperado. Por favor, contacta al administrador.");
-        errorResponse.put("timestamp", System.currentTimeMillis());
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    // private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<GenericResponse<CustomErrorResponse>> handleGenericException(Exception e, WebRequest web) {
+    //     Throwable rootCause = e;
+    //     while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+    //         rootCause = rootCause.getCause();
+    //     }
+
+    //     logger.error("Excepción capturada: {}", e.getClass().getName());
+    //     logger.error("Causa raíz de la excepción: {}", rootCause.getClass().getName());
+
+    //     CustomErrorResponse response = new CustomErrorResponse(
+    //         HttpStatus.INTERNAL_SERVER_ERROR.value(), 
+    //         e.getMessage(), 
+    //         web.getDescription(false)
+    //     );
+
+    //     return new ResponseEntity<>(
+    //         new GenericResponse<>(
+    //             LocalDateTime.now(),
+    //             HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+    //             List.of(response)
+    //         ), 
+    //         HttpStatus.INTERNAL_SERVER_ERROR
+    //     );
+    // }
 
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -40,24 +65,35 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, Object>> handleResponseStatusException(ResponseStatusException e, WebRequest web) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("status", HttpStatus.NOT_FOUND);
-        errorResponse.put("error", web.getDescription(false));
-        errorResponse.put("message", e.getReason());
-        errorResponse.put("timestamp", System.currentTimeMillis());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<GenericResponse<CustomErrorResponse>> handleResponseStatusException(ResponseStatusException e, WebRequest web) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse(404,e.getMessage(),web.getDescription(false));
+        return new ResponseEntity<>(new GenericResponse<>(LocalDateTime.now(),"error", List.of(errorResponse)), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-        errorResponse.setError("Unauthorized");
-        errorResponse.setMessage("Nombre de usuario o contraseña incorrectos");
-        errorResponse.setTimestamp(System.currentTimeMillis());
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<GenericResponse<CustomErrorResponse>> handleBadCredentialsException(BadCredentialsException ex, WebRequest web) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse(401,ex.getMessage(),web.getDescription(false));
+        return new ResponseEntity<>(new GenericResponse<>(LocalDateTime.now(),"Usuario o contraseña incorrectos", List.of(errorResponse)), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(CustomAuthenticationException.class)
+    public ResponseEntity<GenericResponse<CustomErrorResponse>> handleCustomAuthenticationException(CustomAuthenticationException e, WebRequest web) {
+        CustomErrorResponse response = new CustomErrorResponse(
+            HttpStatus.UNAUTHORIZED.value(), 
+            e.getMessage(), 
+            web.getDescription(false)
+        );
+
+        return new ResponseEntity<>(
+            new GenericResponse<>(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.toString(),
+                List.of(response)
+            ), 
+            HttpStatus.UNAUTHORIZED
+        );
+    }
+    
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleUsernameNotFoundException(UsernameNotFoundException e) {

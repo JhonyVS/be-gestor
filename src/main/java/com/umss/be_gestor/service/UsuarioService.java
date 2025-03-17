@@ -85,6 +85,12 @@ public class UsuarioService {
         usuario.setUpdatedAt(LocalDateTime.now());
         usuario.setActivado(true); // Inicializar activado como true
         usuario = usuarioRepository.save(usuario);
+        Workspace workspace = new Workspace();
+        workspace.setProjectManager(usuario);
+        workspace.setActivado(true);
+        workspace.setUpdatedAt(LocalDateTime.now());
+        workspace.setCreatedAt(LocalDateTime.now());
+        workspaceRepository.save(workspace);
         return convertToDTO(usuario);
     }
 

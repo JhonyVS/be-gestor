@@ -26,6 +26,8 @@ import java.util.List;
 public class WebSecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -54,6 +56,7 @@ public class WebSecurityConfig {
                     .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint)) // Aquí inyectas tu clase personalizada
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
