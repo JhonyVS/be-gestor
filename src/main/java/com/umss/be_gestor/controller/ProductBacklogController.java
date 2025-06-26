@@ -3,10 +3,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.umss.be_gestor.dto.HistoriaDTO;
 import com.umss.be_gestor.dto.ProductBacklogDTO;
 import com.umss.be_gestor.exception.NotFoundException;
+import com.umss.be_gestor.model.Historia;
 import com.umss.be_gestor.model.ProductBacklog;
 import com.umss.be_gestor.service.ProductBacklogService;
+import com.umss.be_gestor.util.MapperUtil;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +20,9 @@ public class ProductBacklogController {
 
     @Autowired
     private ProductBacklogService productBacklogService;
+
+    @Autowired
+    private MapperUtil mapperUtil;
 
     @GetMapping("/all")
     public ResponseEntity<List<ProductBacklogDTO>> getAllProductBacklogs() {
@@ -47,5 +53,10 @@ public class ProductBacklogController {
     public ResponseEntity<Void> deleteProductBacklog(@PathVariable UUID id) throws NotFoundException {
         productBacklogService.deleteProductBacklog(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/find/historias/{id}")
+    public ResponseEntity<List<HistoriaDTO>> findHistoriasByProyecto(@PathVariable UUID id){
+        return ResponseEntity.ok(mapperUtil.mapList(productBacklogService.findHistoriasByProyecto(id), HistoriaDTO.class));
     }
 }

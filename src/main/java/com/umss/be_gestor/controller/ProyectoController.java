@@ -11,6 +11,9 @@ import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.service.EquipoService;
 import com.umss.be_gestor.service.ProyectoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -82,6 +85,14 @@ public class ProyectoController {
      * @param projectManagerId
      * @return
      */
+    @Operation(
+        summary = "Proyectos con equipo e integrantes",  // Título del endpoint
+        description = "Devuelve los proyectos que le pertenece al usuario con sus equipos mas sus integrantes.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Proyectos encontrados"),
+            @ApiResponse(responseCode = "404", description = "Noi se encontraron proyectos con ese id de usuario.")
+        }
+    )
     @GetMapping("/mis-proyectos-equipos/{usuarioId}")
     public ResponseEntity<List<ProyectoDTO>> getProyectosConEquiposEIntegrantesPorUsuario(@PathVariable UUID usuarioId) {
         List<ProyectoDTO> proyectos = proyectoService.getProyectosConEquiposEIntegrantesPorUsuario(usuarioId);

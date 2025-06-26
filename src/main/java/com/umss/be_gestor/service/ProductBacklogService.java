@@ -2,13 +2,14 @@ package com.umss.be_gestor.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.umss.be_gestor.dto.ProductBacklogDTO;
 import com.umss.be_gestor.exception.NotFoundException;
+import com.umss.be_gestor.model.Historia;
 import com.umss.be_gestor.model.ProductBacklog;
 import com.umss.be_gestor.model.Proyecto;
 import com.umss.be_gestor.repository.ProductBacklogRepository;
 import com.umss.be_gestor.repository.ProyectoRepository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -103,5 +104,9 @@ public class ProductBacklogService {
         productBacklog.setDescripcion(productBacklogDTO.getDescripcion());
         productBacklog.setActivado(productBacklogDTO.getActivado());
         return productBacklog;
+    }
+
+    public List<Historia> findHistoriasByProyecto(UUID idProyecto){
+        return productBacklogRepository.findHistoriasByProyecto(idProyecto);
     }
 }

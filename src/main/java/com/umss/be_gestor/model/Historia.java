@@ -7,12 +7,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "historia")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Historia {
 
     @Id
@@ -30,6 +36,10 @@ public class Historia {
     @Column(name = "titulo", nullable = false, length = 100)
     private String titulo;
 
+    @Column(name = "codigo")
+    private String codigo;
+
+
     @Column(name = "descripcion")
     private String descripcion;
 
@@ -45,77 +55,5 @@ public class Historia {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public Historia() {
-    }
-
-    // Getters y setters
-    public UUID getId() {
-        return id;
-    }
-
-    // No setter para id, para evitar su modificación
-
-    public ProductBacklog getProductBacklog() {
-        return productBacklog;
-    }
-
-    public void setProductBacklog(ProductBacklog productBacklog) {
-        this.productBacklog = productBacklog;
-    }
-
-    public Prioridad getPrioridad() {
-        return prioridad;
-    }
-
-    public void setPrioridad(Prioridad prioridad) {
-        this.prioridad = prioridad;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public Integer getEstimacion() {
-        return estimacion;
-    }
-
-    public void setEstimacion(Integer estimacion) {
-        this.estimacion = estimacion;
-    }
-
-    public Boolean getActivado() {
-        return activado;
-    }
-
-    public void setActivado(Boolean activado) {
-        this.activado = activado;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    
 }

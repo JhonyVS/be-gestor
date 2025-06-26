@@ -13,7 +13,7 @@ public class MapperUtil {
 
     private final ModelMapper modelMapper;
 
-    public <S, T> List<T> mapList(List<T> source, Class<T> target){
+    public <S, T> List<T> mapList(List<S> source, Class<T> target){
         return source.stream()
                 .map(element -> modelMapper.map(element, target))
                 .toList();

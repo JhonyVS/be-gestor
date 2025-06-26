@@ -15,6 +15,8 @@ import java.util.Random;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +28,9 @@ public class DatabaseLoader {
 
         @Autowired
     private PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseLoader.class);
 
-    // Vector de tareas
+    // array de tareas
     private String[] tareasDevs= {
         "Definir requisitos",
         "Crear mockups",
@@ -51,6 +54,8 @@ public class DatabaseLoader {
         "Preparar informe final"
     };
 
+
+    // array de tareas del project manager
     List<String> tasks = Arrays.asList(
             "Planificación inicial del proyecto",
             "Asignación de recursos",
@@ -83,6 +88,40 @@ public class DatabaseLoader {
         "Backlog"
     };
 
+    // array de historias
+    private String[] historias = {
+            "Como usuario, quiero iniciar sesión para acceder a mi cuenta personal",
+            "Como usuario, quiero recuperar mi contraseña cuando la olvide",
+            "Como cliente, quiero buscar productos por categoría",
+            "Como cliente, quiero filtrar productos por precio",
+            "Como cliente, quiero ver detalles completos del producto",
+            "Como cliente, quiero agregar productos al carrito de compras",
+            "Como cliente, quiero eliminar items del carrito",
+            "Como cliente, quiero ver el total de mi compra antes de pagar",
+            "Como cliente, quiero seleccionar método de envío",
+            "Como cliente, quiero aplicar cupones de descuento",
+            "Como cliente, quiero ver el historial de mis pedidos",
+            "Como cliente, quiero cancelar un pedido antes de que sea enviado",
+            "Como usuario, quiero editar mi información personal",
+            "Como usuario, quiero suscribirme al newsletter",
+            "Como cliente, quiero valorar productos comprados",
+            "Como cliente, quiero escribir reseñas de productos",
+            "Como usuario, quiero guardar productos en una lista de deseos",
+            "Como cliente, quiero comparar productos similares",
+            "Como usuario, quiero recibir notificaciones de ofertas",
+            "Como cliente, quiero ver productos recomendados",
+            "Como usuario, quiero cambiar mi dirección de correo electrónico",
+            "Como cliente, quiero ver el estado de mi pedido en tiempo real",
+            "Como usuario, quiero descargar facturas de mis compras",
+            "Como cliente, quiero contactar al servicio al cliente",
+            "Como usuario, quiero ver preguntas frecuentes antes de contactar soporte",
+            "Como cliente, quiero programar entregas recurrentes",
+            "Como usuario, quiero compartir productos en redes sociales",
+            "Como cliente, quiero ver disponibilidad de productos en tiendas físicas",
+            "Como usuario, quiero configurar preferencias de notificaciones",
+            "Como cliente, quiero pagar con múltiples métodos de pago"
+        };
+
     @Bean
     CommandLineRunner initDatabase(
             IUsuarioRepository usuarioRepository,
@@ -109,7 +148,7 @@ public class DatabaseLoader {
 
             // Poblar Usuarios
             if (usuarioRepository.count() == 0) {
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < 40; i++) {
                     Usuario usuario = new Usuario();
                     String username;
 
@@ -145,6 +184,8 @@ public class DatabaseLoader {
                 List<Usuario> usuarios = usuarioRepository.findAll();
                 Random r = new Random();
                 int num;
+                int num2;
+                int aux;
                 for (Usuario usuario : usuarios) {
                     num = r.nextInt(2)+1;
                     for (int i = 0; i < num; i++) {
@@ -158,22 +199,55 @@ public class DatabaseLoader {
                         proyecto.setUpdatedAt(LocalDateTime.now());
                         proyecto.setCreatedAt(LocalDateTime.now());
                         proyectoRepository.save(proyecto);
+
+                        ProductBacklog productBacklog = new ProductBacklog();
+                        productBacklog.setProyecto(proyecto);
+                        productBacklog.setActivado(true);
+                        productBacklog.setCreatedAt(LocalDateTime.now());
+                        productBacklog.setUpdatedAt(LocalDateTime.now());
+                        productBacklogRepository.save(productBacklog);
+
+                        aux = r.nextInt(4)+1;
+                        for (int j = 0; j < aux; j++) {
+                            Sprint sprint = new Sprint();
+                            sprint.setProyecto(proyecto);
+                            sprint.setNumeroSprint(j+1);
+                            sprint.setActivado(true);
+                            sprint.setUpdatedAt(LocalDateTime.now());
+                            sprint.setCreatedAt(LocalDateTime.now());
+                            sprintRepository.save(sprint);
+
+                            num2 = r.nextInt(2)+1;
+
+                            for (int k = 0; k < num2; k++) {
+                                SprintBacklog sprintBacklog = new SprintBacklog();
+                                sprintBacklog.setSprint(sprint);
+                                sprintBacklog.setActivado(true);
+                                sprintBacklog.setCreatedAt(LocalDateTime.now());
+                                sprintBacklog.setUpdatedAt(LocalDateTime.now());
+                                sprintBacklogRepository.save(sprintBacklog);
+                            }
+
+
+                        }     
+
+
                     }
                 }
             }
 
             // Poblar ProductBacklogs
-            if (productBacklogRepository.count() == 0) {
-                List<Proyecto> proyectos = proyectoRepository.findAll();
-                for (Proyecto proyecto : proyectos) {
-                    ProductBacklog productBacklog = new ProductBacklog();
-                    productBacklog.setProyecto(proyecto);
-                    productBacklog.setActivado(true);
-                    productBacklog.setCreatedAt(LocalDateTime.now());
-                    productBacklog.setUpdatedAt(LocalDateTime.now());
-                    productBacklogRepository.save(productBacklog);
-                }
-            }
+            // if (productBacklogRepository.count() == 0) {
+            //     List<Proyecto> proyectos = proyectoRepository.findAll();
+            //     for (Proyecto proyecto : proyectos) {
+            //         ProductBacklog productBacklog = new ProductBacklog();
+            //         productBacklog.setProyecto(proyecto);
+            //         productBacklog.setActivado(true);
+            //         productBacklog.setCreatedAt(LocalDateTime.now());
+            //         productBacklog.setUpdatedAt(LocalDateTime.now());
+            //         productBacklogRepository.save(productBacklog);
+            //     }
+            // }
 
             // Poblar Equipos
             if (equipoRepository.count() == 0) {
@@ -193,7 +267,7 @@ public class DatabaseLoader {
 
             // Poblar Roles
             if (rolRepository.count() == 0) {
-                String[] roles = {"Scrum Master","UX Designer", "Developer", "QA Tester"};
+                String[] roles = {"Scrum Master","UX Designer", "Developer", "QA Tester", "Product Owner"};
                 for (String roleName : roles) {
                     Rol rol = new Rol();
                     rol.setNombre(roleName);
@@ -236,40 +310,6 @@ public class DatabaseLoader {
                 }
             }
 
-            // Poblar Sprints de proyectos de equipos
-            if (sprintRepository.count() == 0) {
-                List<Proyecto> proyectos = proyectoRepository.findAll();
-                for (Proyecto proyecto : proyectos) {
-                    int aux = new Random().nextInt(4);
-                    for (int i = 0; i < aux; i++) {
-                        Sprint sprint = new Sprint();
-                        sprint.setProyecto(proyecto);
-                        sprint.setNumeroSprint(i+1);
-                        sprint.setActivado(true);
-                        sprint.setUpdatedAt(LocalDateTime.now());
-                        sprint.setCreatedAt(LocalDateTime.now());
-                        sprintRepository.save(sprint);
-                    }                    
-                }
-            }
-
-            // Poblar SprintBacklogs
-            if (sprintBacklogRepository.count() == 0) {
-                List<Sprint> sprints = sprintRepository.findAll();
-                Random r = new Random();
-                int num;
-                for (Sprint sprint : sprints) {
-                    num = r.nextInt(3);
-                    for (int i = 0; i < num; i++) {
-                        SprintBacklog sprintBacklog = new SprintBacklog();
-                        sprintBacklog.setSprint(sprint);
-                        sprintBacklog.setActivado(true);
-                        sprintBacklog.setCreatedAt(LocalDateTime.now());
-                        sprintBacklog.setUpdatedAt(LocalDateTime.now());
-                        sprintBacklogRepository.save(sprintBacklog);
-                    }
-                }
-            }
             // Poblar Prioridades
             if (prioridadRepository.count() == 0) {
                 for (int i = 0; i < 4; i++) {
@@ -282,14 +322,53 @@ public class DatabaseLoader {
                 }
             }
 
+            // Poblar Sprints de proyectos de equipos
+            // if (sprintRepository.count() == 0) {
+            //     int num=0;
+            //     Random r = new Random();
+            //     List<Proyecto> proyectos = proyectoRepository.findAll();
+            //     for (Proyecto proyecto : proyectos) {
+            //         int aux = new Random().nextInt(4)+1;
+            //         for (int i = 0; i < aux; i++) {
+            //             Sprint sprint = new Sprint();
+            //             sprint.setProyecto(proyecto);
+            //             sprint.setNumeroSprint(i+1);
+            //             sprint.setActivado(true);
+            //             sprint.setUpdatedAt(LocalDateTime.now());
+            //             sprint.setCreatedAt(LocalDateTime.now());
+            //             sprintRepository.save(sprint);
+            //         }                    
+            //     }
+            // }
+
+            // Poblar SprintBacklogs
+            // if (sprintBacklogRepository.count() == 0) {
+            //     List<Sprint> sprints = sprintRepository.findAll();
+            //     Random r = new Random();
+            //     int num;
+            //     for (Sprint sprint : sprints) {
+            //         num = r.nextInt(2)+1;
+            //         for (int i = 0; i < num; i++) {
+            //             SprintBacklog sprintBacklog = new SprintBacklog();
+            //             sprintBacklog.setSprint(sprint);
+            //             sprintBacklog.setActivado(true);
+            //             sprintBacklog.setCreatedAt(LocalDateTime.now());
+            //             sprintBacklog.setUpdatedAt(LocalDateTime.now());
+            //             sprintBacklogRepository.save(sprintBacklog);
+            //         }
+            //     }
+            // }
+            
+
             // Poblar Historias
             if (historiaRepository.count() == 0) {
                 List<Prioridad> prioridades = prioridadRepository.findAll();
                 List<ProductBacklog> pbl = productBacklogRepository.findAll();
                 for (ProductBacklog pb : pbl) {
-                    for (int i = 0; i < 10; i++) {
+                    for (int i = 0; i < 12; i++) {
                         Historia historia = new Historia();
-                        historia.setTitulo(faker.lorem().sentence());
+                        historia.setCodigo("HU"+(i+1));
+                        historia.setTitulo(historias[faker.number().numberBetween(0, historias.length)]);
                         historia.setDescripcion(faker.lorem().sentence());
                         historia.setPrioridad(prioridades.get(faker.number().numberBetween(0, prioridades.size())));
                         historia.setProductBacklog(pb);
@@ -301,14 +380,14 @@ public class DatabaseLoader {
                 }
             }
 
-            // // Poblar AsignarHistorias
+             // Poblar AsignarHistorias
             if (asignarHistoriaRepository.count() == 0) {
                 List<SprintBacklog> spb = sprintBacklogRepository.findAll();
                 List<Historia> historias = historiaRepository.findAll();
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < historias.size(); i++) {
                     AsignarHistoria asignarHistoria = new AsignarHistoria();
                     asignarHistoria.setSprintBacklog(spb.get(faker.number().numberBetween(0, spb.size())));
-                    asignarHistoria.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
+                    asignarHistoria.setHistoria(historias.get(i));
                     asignarHistoria.setActivado(true);
                     asignarHistoria.setCreatedAt(LocalDateTime.now());
                     asignarHistoria.setUpdatedAt(LocalDateTime.now());
@@ -337,7 +416,7 @@ public class DatabaseLoader {
             if (tableroRepository.count() == 0) {
                 List<Proyecto> proyectos = proyectoRepository.findAll();
                 List<EstadoTarea> ets = estadoTareaRepository.findAll();
-                List<Historia> historias = historiaRepository.findAll();
+                //List<Historia> historias = historiaRepository.findAll();
                 List<Equipo> equipo;
                 Random r = new Random();
                 Tablero tablero;
@@ -376,14 +455,16 @@ public class DatabaseLoader {
                                         integrantes.add(integrante.getUsuario());
                                     }
                                 }
-
+                            List<Historia> hbypb = productBacklogRepository.findHistoriasByProyecto(proyecto.getId());
                             for (int k = 0; k < num2; k++) {
                                 tarea = new Tarea();
                                 tarea.setTitulo(tareasDevs[faker.number().numberBetween(0,tareasDevs.length)]);
                                 tarea.setDescripcion(faker.lorem().sentence());
                                 tarea.setTarjeta(tarjeta);
                                 tarea.setActivado(true);
-                                tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
+                                //tarea.setHistoria(historias.get(faker.number().numberBetween(0, historias.size())));
+                                tarea.setHistoria(hbypb.get(faker.number().numberBetween(0, hbypb.size())));
+                                productBacklogRepository.findByProyecto(proyecto);
                                 tarea.setEstimacion(r.nextInt(5)+2);
                                 aux = faker.number().numberBetween(0, 5);
                                 tarea.setEstado(ets.get( aux == 0 ? 0 : aux == 1 ? 1:2 )); // de esta forma aseguraremos mas tareas terminadas.
@@ -515,7 +596,8 @@ public class DatabaseLoader {
 
             
 
-            
+            logger.info("DatabaseLoader ha terminado existosamente");
+            logger.info("Datos cargados correctamente.");
 
             
         };
